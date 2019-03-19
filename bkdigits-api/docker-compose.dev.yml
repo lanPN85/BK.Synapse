@@ -1,0 +1,15 @@
+version: "3.5"
+
+services:
+  app-main:
+    image: bkdigits/apis:$APP_VERSION-dev
+    volumes:
+      - type: bind
+        target: /app
+        source: ./
+    environment:
+      - APP_CONF=configs/app.dev.py
+    ports:
+      - 5000:5000
+    command: python3 app.py
+    restart: on-failure
