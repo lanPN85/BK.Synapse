@@ -1,9 +1,12 @@
 version: "3.5"
 
+volumes:
+  app-nodes-db-data:
+
 services:
   app-main:
     build: .
-    image: bkdigits/apis:0.1.0
+    image: bkdigits/apis:$APP_VERSION
     environment:
       - APP_JWT_KEY=dsfkjoj3nr034n1  # Change these in prod
     volumes:
@@ -18,6 +21,10 @@ services:
     depends_on:
       - app-nodes-db
   app-nodes-db:
-    image: redis:latest
+    image: mongo:latest
     ports:
-      - 17001:6379
+      - 17001:27017
+    volumes:
+      - type: volume
+        target: /data/db
+        source: app-nodes-db-data

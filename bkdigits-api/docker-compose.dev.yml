@@ -2,6 +2,7 @@ version: "3.5"
 
 services:
   app-main:
+    image: bkdigits/apis:$APP_VERSION-dev
     volumes:
       - type: bind
         target: /app

@@ -12,12 +12,15 @@ from argparse import ArgumentParser
 def parse_arguments():
     parser = ArgumentParser()
 
-    parser.add_argument('--nodes', required=True)
+    parser.add_argument('--node-type', required=True, choices=['cpu', 'gpu'])
     parser.add_argument('--shuffle', action='store_true')
     parser.add_argument('--dataset-path', required=True)
     parser.add_argument('--val-dataset-path', required=True)
     parser.add_argument('--job-path', required=True)
+    parser.add_argument('--data-loader-path', required=True)
     parser.add_argument('--epochs', type=int, required=True)
+    parser.add_argument('--lr', type=float, required=True)
+    parser.add_argument('--optimizer', required=True)
     parser.add_argument('--node-type', required=True)
 
     return parser.parse_args()

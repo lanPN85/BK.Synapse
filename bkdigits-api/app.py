@@ -11,9 +11,7 @@ from flask_cors import CORS
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
-from apis.auth import Login, NewToken
-from apis.jobs import SubmitJob, JobTypes, JobList
-from apis.rabbitmq import RabbitMqWrapper
+from apis.jobs import SubmitJob
 
 
 app = Flask(__name__)
@@ -33,17 +31,11 @@ JWTManager(app)
 
 # Add flask_restful endpoints
 api = Api(app)
-api.add_resource(Login, '/auth/login')
-api.add_resource(NewToken, '/auth/refresh')
 api.add_resource(SubmitJob, '/jobs/submit')
-api.add_resource(JobList, '/jobs/list')
 
 
 def exit():
-    try:
-        app.config['RABBIT_MQ'].close()
-    except:
-        pass
+    pass
 
 atexit.register(exit)
 

@@ -9,7 +9,7 @@ DEBUG = False
 PROPAGATE_EXCEPTIONS = True
 MAX_CONTENT_LENGTH = 1024 * 1024 * 1024
 
-DATASET_PATH = './datasets'
+DATA_ROOT = './data'
 BACKEND_WORKER_DIRS = {
     'pytorch': './bin/pytorch'
 }
