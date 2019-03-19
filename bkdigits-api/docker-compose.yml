@@ -1,0 +1,23 @@
+version: "3.5"
+
+services:
+  app-main:
+    build: .
+    image: bkdigits/apis:0.1.0
+    environment:
+      - APP_JWT_KEY=dsfkjoj3nr034n1  # Change these in prod
+    volumes:
+      - type: bind
+        target: /app/logs
+        source: ./logs
+      - type: bind
+        target: /app/configs
+        source: ./configs
+    ports:
+      - 17000:5000
+    depends_on:
+      - app-nodes-db
+  app-nodes-db:
+    image: redis:latest
+    ports:
+      - 17001:6379

@@ -1,0 +1,14 @@
+version: "3.5"
+
+services:
+  app-main:
+    volumes:
+      - type: bind
+        target: /app
+        source: ./
+    environment:
+      - APP_CONF=configs/app.dev.py
+    ports:
+      - 5000:5000
+    command: python3 app.py
+    restart: on-failure
