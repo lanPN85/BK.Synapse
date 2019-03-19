@@ -14,9 +14,9 @@ export default new Router({
       component: Home
     },
     {
-      path: '/about',
-      name: 'about',
-      component: () => import('./views/About.vue')
+      path: '*',
+      name: 'not-found',
+      component: () => import('./views/Page404.vue')
     }
   ]
 })
