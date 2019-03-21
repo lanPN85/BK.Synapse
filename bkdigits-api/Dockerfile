@@ -46,6 +46,8 @@ RUN pip3 install --no-cache-dir horovod && ldconfig
 WORKDIR /app
 COPY requirements.txt /app/
 RUN pip3 install -r requirements.txt
+COPY runtime-requirements.txt /app/
+RUN pip3 install -r runtime-requirements.txt
 
 ENV SSHDIR ${HOME}/.ssh/
 RUN mkdir -p ${SSHDIR}

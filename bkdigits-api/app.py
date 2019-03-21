@@ -11,14 +11,13 @@ from flask_cors import CORS
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
-from apis.jobs import SubmitJob
+from apis.jobs import SubmitTrainingJob
 
 
 app = Flask(__name__)
 
 # App configs
 app.config.from_pyfile('configs/app.default.py')
-app.config.from_pyfile('configs/workers.py')
 CONFIG_ENVVAR = 'APP_CONF'
 if CONFIG_ENVVAR in os.environ.keys():
     app.config.from_envvar(CONFIG_ENVVAR, silent=True)
@@ -31,7 +30,7 @@ JWTManager(app)
 
 # Add flask_restful endpoints
 api = Api(app)
-api.add_resource(SubmitJob, '/jobs/submit')
+api.add_resource(SubmitTrainingJob, '/jobs/submit/training')
 
 
 def exit():
