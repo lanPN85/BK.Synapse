@@ -4,13 +4,13 @@ import os
 
 from argparse import ArgumentParser
 
-from bkdnode import utils
+from nodes import utils
 
 
 def parse_arguments():
     parser = ArgumentParser()
 
-    parser.add_argument('-c', '--config', action='append', default=['configs/config.json'])
+    parser.add_argument('-c', '--config', action='append', default=['configs/workers/default.json'])
 
     return parser.parse_args()
 
