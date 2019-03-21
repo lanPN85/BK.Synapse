@@ -6,8 +6,9 @@ volumes:
 services:
   app-main:
     build: .
-    image: bkdigits/apis:$APP_VERSION
+    image: bkdigits/system:$APP_VERSION
     environment:
+      - BK_DIGITS_DATA_ROOT=/app/data
       - APP_JWT_KEY=dsfkjoj3nr034n1  # Change these in prod
     volumes:
       - type: bind
@@ -16,10 +17,22 @@ services:
       - type: bind
         target: /app/configs
         source: ./configs
+      - type: bind
+        target: /app/data
+        source: ./data
     ports:
       - 17000:5000
     depends_on:
       - app-nodes-db
+  app-node:
+    image: bkdigits/system:$APP_VERSION
+    volumes:
+      - type: bind
+        target: /app/logs
+        source: ./logs
+      - type: bind
+        target: /app/configs
+        source: ./configs
   app-nodes-db:
     image: mongo:latest
     ports:
