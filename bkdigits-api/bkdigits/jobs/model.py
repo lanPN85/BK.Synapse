@@ -1,6 +1,7 @@
 import uuid
 import os
 import json
+import toml
 
 from marshmallow import Schema, fields, post_load
 
@@ -17,7 +18,7 @@ class NodeConfigSchema(Schema):
 class TrainingJobConfig:
     def __init__(self, dataset, valDataset, 
         dataLoader, nodes, model, backend='pytorch',
-        shuffle=False, epochs=50, nodeType='cpu',
+        epochs=50, nodeType='cpu',
         batchSize=32, valDataLoader=None,
         optimizer='sgd', learningRate=1e-3,
         snapshotInterval=5):
@@ -31,7 +32,6 @@ class TrainingJobConfig:
         self.dataLoader = dataLoader
         self.valDataLoader = valDataLoader
         self.nodes = nodes
-        self.shuffle = shuffle
         self.epochs = epochs
         self.batchSize = batchSize
         self.nodeType = nodeType
@@ -51,7 +51,6 @@ class TrainingJobConfigSchema(Schema):
         fields.Nested(NodeConfigSchema())
     )
     nodeType = fields.Str()
-    shuffle = fields.Boolean()
     batchSize = fields.Int()
     epochs = fields.Int()
     snapshotInterval = fields.Int()
@@ -65,13 +64,15 @@ class TrainingJobConfigSchema(Schema):
 
 class TrainingJobStatus:
     def __init__(self, state, 
-        iter=0, epoch=0, message=None,
+        iter=0, totalIter=0, 
+        epoch=0, message=None, 
         metrics=None):
         if metrics is None:
             metrics = {}
 
         self.state = state
         self.iter = iter
+        self.totalIter = totalIter
         self.epoch = epoch
         self.message = message
         self.metrics = metrics
@@ -80,6 +81,7 @@ class TrainingJobStatus:
 class TrainingJobStatusSchema(Schema):
     state = fields.Str()
     iter = fields.Int()
+    totalIter = fields.Int()
     epoch = fields.Int()
     error = fields.Str()
     metrics = fields.Dict()
@@ -90,7 +92,7 @@ class TrainingJobStatusSchema(Schema):
 
 
 class TrainingJob:
-    def __init__(self, id, config=None):
+    def __init__(self, id, config=None):      
         self.id = id
         self.config = config
 
@@ -123,6 +125,14 @@ class TrainingJob:
         return os.path.join(self.path, 'status.json')
 
     @property
+    def history_path(self):
+        return os.path.join(self.output_path, 'history.toml')
+
+    @property
+    def output_path(self):
+        return os.path.join(self.path, 'output')
+
+    @property
     def exists(self):
         return os.path.exists(self.path)
 
@@ -130,11 +140,18 @@ class TrainingJob:
         d = TrainingJobStatusSchema().dump(status).data
         with open(self.status_path, 'wt') as f:
             json.dump(d, f, indent=2)
+        with open(self.history_path, 'at') as f:
+            s = '%s\n\n' % toml.dumps({'entry': [d]})
+            f.write(s)
 
     def get_status(self):
         with open(self.status_path, 'rt') as f:
             d = json.load(f)
         return TrainingJobStatusSchema().load(d).data
+
+    def get_history(self):
+        with open(self.history_path, 'rt') as f:
+            return toml.load(f).get('entry', [])
 
     def save(self):
         os.makedirs(self.path)
@@ -149,7 +166,7 @@ class TrainingJob:
     def load(cls, job_id):
         job = cls(job_id)
         with open(job.config_path, 'rt') as f:
-            job.config = TrainingJobConfigSchema().load(json.load(f))
+            job.config = TrainingJobConfigSchema().load(json.load(f)).data
         return job
 
 class TrainingJobSchema(Schema):

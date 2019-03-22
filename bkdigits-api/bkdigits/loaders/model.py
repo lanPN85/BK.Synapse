@@ -45,10 +45,7 @@ class DataLoader:
 
     @classmethod
     def load(cls, name):
-        loader = cls(name)
-        with open(loader.content_path, 'rt') as f:
-            loader.content = f.read()
-        return loader
+        return cls(name)
 
 
 class DataLoaderSchema(Schema):
