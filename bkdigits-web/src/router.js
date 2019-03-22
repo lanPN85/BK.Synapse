@@ -14,6 +14,30 @@ export default new Router({
       component: Home
     },
     {
+      path: '/models/new',
+      name: 'create-model',
+      component: () => import('./views/models/CreateModelView.vue')      
+    },
+    {
+      path: '/models/edit',
+      name: 'manage-model',
+      component: () => import('./views/models/ManageModelsView.vue')      
+    },
+    {
+      path: '/loaders/new',
+      name: 'create-loader',
+      component: () => import('./views/loaders/CreateLoaderView.vue') 
+    },
+    {
+      path: '/datasets/new',
+      name: 'create-dataset',
+      component: () => import('./views/datasets/CreateDatasetView.vue') 
+    },
+    {
+      path: '/jobs/new',
+      name: 'create-jobs',
+      component: () => import('./views/jobs/CreateJobView.vue') 
+    },{
       path: '*',
       name: 'not-found',
       component: () => import('./views/Page404.vue')

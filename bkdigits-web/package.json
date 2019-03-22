@@ -13,8 +13,8 @@
     "roboto-fontface": "*",
     "typeface-exo": "^0.0.61",
     "vue": "^2.6.6",
-    "vue-dropzone": "^1.0.4",
     "vue-router": "^3.0.1",
+    "vue2-dropzone": "^3.5.7",
     "vuetify": "^1.5.5",
     "vuex": "^3.0.1"
   },

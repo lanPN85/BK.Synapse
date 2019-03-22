@@ -1,6 +1,6 @@
 <template>
   <div class="app-header">
-    <v-toolbar color="primary" dark app clipped-left>
+    <v-toolbar color="primary" dark app clipped-left flat>
       <v-toolbar-side-icon @click="drawer.show = !drawer.show"
         class="hidden-md-and-up">
         <v-icon>mdi-menu</v-icon>

@@ -12,4 +12,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.header-text {
+  font-weight: bold;
+}
 </style>

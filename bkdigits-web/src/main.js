@@ -6,6 +6,7 @@ import router from './router'
 import store from './store'
 import 'typeface-exo'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import '@mdi/font/css/materialdesignicons.css'
 
 Vue.config.productionTip = false
