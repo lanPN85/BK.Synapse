@@ -54,6 +54,8 @@ RUN mkdir -p ${SSHDIR}
 COPY mpi/ssh/id_rsa.mpi ${SSHDIR}/id_rsa
 COPY mpi/ssh/id_rsa.mpi.pub ${SSHDIR}/id_rsa.pub
 COPY mpi/ssh/id_rsa.mpi.pub ${SSHDIR}/authorized_keys
+ENV OMPI_ALLOW_RUN_AS_ROOT=1
+ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
 EXPOSE 22
 
