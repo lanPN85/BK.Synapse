@@ -13,7 +13,7 @@ class Model:
 
     @property
     def path(self):
-        return os.path.join(os.environ['BKDIGITS_DATA_ROOT'], 'jobs', self.name)
+        return os.path.join(os.environ['BKDIGITS_DATA_ROOT'], 'models', self.name)
 
     @property
     def src_path(self):
@@ -57,7 +57,7 @@ class Model:
         return model
     
     def save(self):
-        os.makedirs(self.path)
+        os.makedirs(self.src_path, exist_ok=True)
         meta = ModelSchema().dump(self).data
         with open(self.meta_path, 'wt') as f:
             json.dump(meta, f, indent=2)

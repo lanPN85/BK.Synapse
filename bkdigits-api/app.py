@@ -11,7 +11,8 @@ from flask_cors import CORS
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
-from apis.jobs import SubmitTrainingJob
+from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob
+from apis.models import SubmitModel, UploadModelSrc, UploadModelWeights
 
 
 app = Flask(__name__)
@@ -31,6 +32,11 @@ JWTManager(app)
 # Add flask_restful endpoints
 api = Api(app)
 api.add_resource(SubmitTrainingJob, '/jobs/submit/training')
+api.add_resource(StartTrainingJob, '/jobs/start/training')
+api.add_resource(StopTrainingJob, '/jobs/stop/training')
+api.add_resource(SubmitModel, '/models/submit')
+api.add_resource(UploadModelSrc, '/models/upload/<model_name>/src')
+api.add_resource(UploadModelWeights, '/models/upload/<model_name>/weights')
 
 
 def exit():

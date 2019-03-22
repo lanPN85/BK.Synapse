@@ -1,3 +1,7 @@
 venv/
 logs/
 configs/
+tests/
+data/
+.vscode/
+.pytest_cache/

@@ -1,0 +1,7 @@
+**/output/
+!**/output/.gitkeep
+**/snapshots/
+!**/snapshots/.gitkeep
+**/logs/
+!**/logs/.gitkeep
+**/status.json
