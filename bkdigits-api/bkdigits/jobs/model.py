@@ -141,7 +141,7 @@ class TrainingJob:
         with open(self.status_path, 'wt') as f:
             json.dump(d, f, indent=2)
         with open(self.history_path, 'at') as f:
-            s = '%s\n\n' % toml.dumps({'entry': [d]})
+            s = '''# ===Start===\n%s# ===End===\n\n''' % toml.dumps({'entry': [d]})
             f.write(s)
 
     def get_status(self):

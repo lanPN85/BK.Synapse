@@ -7,12 +7,14 @@ import logging
 import requests
 import logzero
 import torch
+import shutil
 import traceback
 import torch.distributed
 import torch.nn as nn
 import torch.optim as optim
 import torch.cuda
 import horovod.torch as hvd
+import tensorboardX
 
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.distributed import DistributedSampler
@@ -25,6 +27,7 @@ from bkdigits.datasets import Dataset as BkDigitsDataset
 from bkdigits.jobs import TrainingJob, TrainingJobStatus
 from bkdigits.loaders import DataLoader as BkDigitsDataLoader
 from bkdigits.models import Model
+from bkdigits.metrics import UpdatingMetric
 
 
 hvd.init()
@@ -53,6 +56,18 @@ def update_job_status(job, **kwargs):
     status = TrainingJobStatus(**kwargs)
     job.update_status(status)
 
+
+@root_node_only
+def save_tensorboard_graph(log_writer, model, inp):
+    log_writer.add_graph(model, (inp,))
+
+
+@root_node_only
+def save_tensorboard_metrics(log_writer, metrics, epoch, prefix=''):
+    for k, v in metrics.items():
+        log_writer.add_scalar('%s%s' % (prefix, k),
+            v, epoch)
+
     
 def log_update_status(job, **kwargs):
     update_job_status(job, **kwargs)
@@ -78,10 +93,6 @@ def log_update_status(job, **kwargs):
 def save_snapshot(model, path):
     torch.save(model.state_dict(), path)
 
-NODE_TO_DIST_CLS = {
-    'cpu': nn.parallel.DistributedDataParallelCPU,
-    'gpu': nn.parallel.DistributedDataParallel
-}
 
 OPTIMIZER_MAP = {
     'sgd': optim.SGD, 'adam': optim.Adam, 
@@ -90,9 +101,12 @@ OPTIMIZER_MAP = {
 
 
 def main(job):
+    logzero.logfile(os.path.join(job.log_path, 'train.node-%d.log' % hvd.rank()),mode='w')
     if os.path.exists(job.history_path):
         os.remove(job.history_path)
     log_update_status(job, state='SETUP')
+
+    # Setup objects
     model = Model.load(job.config.model)
     _loader = BkDigitsDataLoader.load(job.config.dataLoader)
     _val_loader = BkDigitsDataLoader.load(job.config.valDataLoader)
@@ -101,8 +115,6 @@ def main(job):
     assert job.config.backend == 'pytorch'
     assert model.backend == 'pytorch'
 
-    logzero.logfile(os.path.join(job.log_path, 'train.node-%d.log' % hvd.rank()),mode='w')
-    dist_cls = NODE_TO_DIST_CLS[job.config.nodeType]
     optim_cls = OPTIMIZER_MAP[job.config.optimizer]
 
     try:
@@ -114,6 +126,7 @@ def main(job):
         exit(-1)
     
     try:
+        # Import model
         torch_model = model.load_model()
     except AttributeError:
         log_update_status(running=False, 
@@ -129,6 +142,7 @@ def main(job):
     else:
         torch_model.cpu()
     
+    # Setup data samplers
     train_sampler = DistributedSampler(train_dataset, num_replicas=hvd.size(), rank=hvd.rank())
     train_loader = DataLoader(train_dataset,
         batch_size=job.config.batchSize,
@@ -140,6 +154,7 @@ def main(job):
         batch_size=job.config.batchSize,
         sampler=val_sampler, collate_fn=val_dataset.collate, **kwargs)
 
+    # Setup optimizers
     hvd.broadcast_parameters(torch_model.state_dict(), root_rank=0)
     optimizer = optim_cls(torch_model.parameters(),
         lr=job.config.learningRate * hvd.size())
@@ -148,12 +163,25 @@ def main(job):
         named_parameters=torch_model.named_parameters(),
         compression=compression)
 
+    # Setup tensorboard
+    tb_path = os.path.join(job.output_path, 'tensorboard')
+    if os.path.exists(tb_path):
+        shutil.rmtree(tb_path)
+    log_writer = tensorboardX.SummaryWriter(tb_path) if hvd.rank() == 0 else None
+    # Visualize graph with first batch
+    first_batch, _ = next(iter(val_loader))
+    if use_cuda:
+        first_batch = first_batch.cuda()
+    save_tensorboard_graph(log_writer, torch_model, first_batch)
+    del first_batch
+
     # Start training
     log_update_status(job, state='TRAINING', message='Starting training...')
     for ep in range(job.config.epochs):
         # Train phase
         torch_model.train()
         train_sampler.set_epoch(ep)
+        metrics = defaultdict(lambda: UpdatingMetric())
         for batch_idx, (data, target) in enumerate(train_loader):
             if use_cuda:
                 data, target = data.cuda(), target.cuda()
@@ -163,14 +191,28 @@ def main(job):
             loss = torch_model.loss(output, target)
             loss.backward()
             optimizer.step()
-            metrics = {'loss': loss.item()}
+            metrics['loss'].update(loss.item())
+            
             try:
                 # Get metrics if metrics() is implemented
-                metrics.update(torch_model.metrics(output, target))
+                _user_metrics = torch_model.metrics(output, target)
+                for k, v in _user_metrics.items():
+                    metrics[k].update(v)
             except AttributeError:
                 pass
+            
+            # Convert Metric to value
+            m_dict = {}
+            for k, v in metrics.items():
+                m_dict[k] = v.avg
+
             log_update_status(job, state='TRAINING',
-                iter=batch_idx+1, totalIter=len(train_loader), epoch=ep+1, metrics=metrics)
+                iter=batch_idx+1, totalIter=len(train_loader), epoch=ep+1, metrics=m_dict)
+        
+        m_dict = {}
+        for k, v in metrics.items():
+            m_dict[k] = v.avg
+        save_tensorboard_metrics(log_writer, m_dict, ep+1, prefix='train/')
 
         # Eval phase
         torch_model.eval()
@@ -196,13 +238,14 @@ def main(job):
         # Calculate average for all metrics
         avg_metrics = {}
         for k, v in val_metrics.items():
-            avg_k = 'avg_%s' % k
+            avg_k = '%s' % k
             avg_v = v / len(val_loader)
             avg_v = metric_average(avg_v, avg_k)
             avg_metrics[avg_k] = avg_v
         log_update_status(job, state='EVALUATED', epoch=ep+1,
             iter=len(val_loader), metrics=avg_metrics, 
             totalIter=len(val_loader))
+        save_tensorboard_metrics(log_writer, avg_metrics, ep+1, prefix='val/')
 
         # Save snapshot
         if ep % job.config.snapshotInterval == 0:
@@ -211,7 +254,9 @@ def main(job):
             save_snapshot(torch_model, snap_path)
             log_update_status(job, state='SAVING', 
                 message='Saved model snapshot')
-        
+    
+    if log_writer:
+        log_writer.close()
     log_update_status(job, state='FINISHED')
 
 
