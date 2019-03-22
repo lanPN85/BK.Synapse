@@ -3,6 +3,7 @@
 import sys
 sys.path.extend(['.'])
 import os
+import signal
 import logging
 import requests
 import logzero
@@ -37,6 +38,12 @@ def root_node_only(fn):
         if hvd.rank() == 0:
             return fn(*args, **kwargs)
     return decorate
+
+
+def handle_exit(sig, frame):
+    raise(SystemExit)
+
+signal.signal(signal.SIGTERM, handle_exit)
 
 
 def parse_arguments():
@@ -265,7 +272,7 @@ if __name__ == "__main__":
     job = TrainingJob.load(args.job_id)
     try:
         main(job)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, SystemExit):
         log_update_status(job, state='INTERRUPT', message="Training interrupted")
     except:
         log_update_status(job, state='ERROR', message=traceback.format_exc())
