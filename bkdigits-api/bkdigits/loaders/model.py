@@ -31,7 +31,6 @@ class DataLoader:
         
         with open(self.loader_def_path, 'rt') as f:
             exec(f.read(), globals())
-            _ = UserDataset.collate
             dataset = UserDataset(dataset_path)
         
         # Avoid polluting path
