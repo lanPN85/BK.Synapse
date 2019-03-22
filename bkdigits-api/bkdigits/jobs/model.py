@@ -3,6 +3,7 @@ import os
 import json
 import toml
 
+from datetime import datetime
 from marshmallow import Schema, fields, post_load
 
 
@@ -91,15 +92,30 @@ class TrainingJobStatusSchema(Schema):
         return TrainingJobStatus(**data)
 
 
+class TrainingJobMetadata:
+    def __init__(self, createdAt=None, pid=None):
+        if createdAt is None:
+            createdAt = datetime.now()
+
+        self.createdAt = createdAt
+        self.pid = pid
+
+
+class TrainingJobMetadataSchema(Schema):
+    createdAt = fields.DateTime
+    pid = fields.Int()
+
+
 class TrainingJob:
-    def __init__(self, id, config=None):      
+    def __init__(self, id, config=None, meta=None):      
         self.id = id
         self.config = config
+        self.meta = meta
 
     @classmethod
-    def from_config(cls, config):
+    def from_config(cls, config, meta):
         job_id = uuid.uuid4()
-        return cls(job_id, config)
+        return cls(job_id, config, meta)
     
     def copy(self):
         return TrainingJob(uuid.uuid4(), self.config)
@@ -115,6 +131,10 @@ class TrainingJob:
     @property
     def snapshot_path(self):
         return os.path.join(self.path, 'snapshots')
+
+    @property
+    def meta_path(self):
+        return os.path.join(self.path, 'meta.json')
 
     @property
     def config_path(self):
@@ -154,24 +174,32 @@ class TrainingJob:
             return toml.load(f).get('entry', [])
 
     def save(self):
-        os.makedirs(self.path)
-        os.makedirs(self.log_path)
-        os.makedirs(self.snapshot_path)
+        os.makedirs(self.path, exist_ok=True)
+        os.makedirs(self.log_path, exist_ok=True)
+        os.makedirs(self.snapshot_path, exist_ok=True)
         
         conf_dict = TrainingJobConfigSchema().dump(self.config).data
         with open(self.config_path, 'wt') as f:
             json.dump(conf_dict, f, indent=2)
+
+        meta_dict = TrainingJobMetadataSchema().dump(self.meta).data
+        with open(self.meta_path, 'wt') as f:
+            json.dump(meta_dict, f, indent=2)
 
     @classmethod
     def load(cls, job_id):
         job = cls(job_id)
         with open(job.config_path, 'rt') as f:
             job.config = TrainingJobConfigSchema().load(json.load(f)).data
+        with open(job.meta_path, 'rt') as f:
+            job.meta = TrainingJobMetadataSchema().load(json.load(f)).data
         return job
+
 
 class TrainingJobSchema(Schema):
     id = fields.Str()
     config = fields.Nested(TrainingJobConfigSchema())
+    meta = fields.Nested(TrainingJobMetadataSchema())
 
     @post_load
     def make_obj(self, data):

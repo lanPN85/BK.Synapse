@@ -57,7 +57,7 @@ class Model:
         return model
     
     def save(self):
-        os.makedirs(self.path)
+        os.makedirs(self.src_path, exist_ok=True)
         meta = ModelSchema().dump(self).data
         with open(self.meta_path, 'wt') as f:
             json.dump(meta, f, indent=2)
