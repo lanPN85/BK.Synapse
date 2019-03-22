@@ -1,0 +1,14 @@
+{
+    "backend": "pytorch",
+    "model": "test-torch",
+    "dataset": "test-torch-train",
+    "valDataset": "test-torch-val",
+    "dataLoader": "test-torch-train",
+    "valDataLoader": "test-torch-val",
+    "nodes": [],
+    "epochs": 2,
+    "nodeType": "cpu",
+    "batchSize": 64,
+    "optimizer": "adam",
+    "learningRate": 1e-3
+}
