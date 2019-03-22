@@ -102,7 +102,7 @@ class TrainingJobMetadata:
 
 
 class TrainingJobMetadataSchema(Schema):
-    createdAt = fields.DateTime
+    createdAt = fields.DateTime()
     pid = fields.Int()
 
 

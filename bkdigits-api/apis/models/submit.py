@@ -1,5 +1,6 @@
 import flask
 import os
+import shutil
 
 from flask import current_app
 from flask_restful import Resource
@@ -33,6 +34,10 @@ class UploadModelSrc(Resource):
         model = Model.load(model_name)
         save_path = os.path.join(model.src_path, 'src.zip')
         current_chunk = int(flask.request.form['dzchunkindex'])
+
+        if current_chunk == 0 and os.path.exists(model.src_path):
+            shutil.rmtree(model.src_path)
+            os.makedirs(model.src_path)
 
         with open(save_path, 'ab') as f:
             f.seek(int(request.form['dzchunkbyteoffset']))
