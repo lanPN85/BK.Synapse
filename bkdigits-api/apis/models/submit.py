@@ -40,10 +40,10 @@ class UploadModelSrc(Resource):
             os.makedirs(model.src_path)
 
         with open(save_path, 'ab') as f:
-            f.seek(int(request.form['dzchunkbyteoffset']))
+            f.seek(int(flask.request.form['dzchunkbyteoffset']))
             f.write(fp.stream.read())
 
-        total_chunks = int(request.form['dztotalchunkcount'])
+        total_chunks = int(flask.request.form['dztotalchunkcount'])
         if current_chunk + 1 == total_chunks:
             utils.unzip(save_path)
             os.remove(save_path)
@@ -62,10 +62,10 @@ class UploadModelWeights(Resource):
         current_chunk = int(flask.request.form['dzchunkindex'])
 
         with open(save_path, 'ab') as f:
-            f.seek(int(request.form['dzchunkbyteoffset']))
+            f.seek(int(flask.request.form['dzchunkbyteoffset']))
             f.write(fp.stream.read())
 
-        total_chunks = int(request.form['dztotalchunkcount'])
+        total_chunks = int(flask.request.form['dztotalchunkcount'])
         if current_chunk + 1 == total_chunks:
             utils.unzip(save_path)
             os.remove(save_path)

@@ -6,6 +6,7 @@ def err_logged(fn, msg=''):
         logger = logging.getLogger('flask.error')
         try:
             return fn(*args, **kwargs)
-        except:
+        except Exception as e:
             logger.exception(msg, exc_info=True)
+            raise e
     return decorate

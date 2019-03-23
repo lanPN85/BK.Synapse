@@ -12,10 +12,13 @@ class Dataset:
     @property
     def path(self):
         return os.path.join(os.environ['BKDIGITS_DATA_ROOT'], 'datasets', self.name)
-
+    
     @property
     def exists(self):
         return os.path.exists(self.path)
+
+    def save(self):
+        os.makedirs(self.path, exist_ok=True)
 
 
 class DatasetSchema(Schema):
