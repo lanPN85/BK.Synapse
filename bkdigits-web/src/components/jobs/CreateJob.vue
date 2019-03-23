@@ -17,35 +17,35 @@
                 color="jobs" box></v-select>
             </v-flex>
             <v-flex xs12 md6>
-              <v-select label="Train Dataset"
+              <v-autocomplete label="Train Dataset"
                 v-model="jobConfigs.dataset"
                 :items="configChoices.dataset"
-                color="jobs" box></v-select>
+                color="jobs" box></v-autocomplete>
             </v-flex>
             <v-flex xs12 md6>
-              <v-select label="Validation Dataset"
+              <v-autocomplete label="Validation Dataset"
                 v-model="jobConfigs.valDataset"
                 :items="configChoices.dataset"
-                color="jobs" box></v-select>
+                color="jobs" box></v-autocomplete>
             </v-flex>
             <v-flex xs12 md6>
-              <v-select label="Train Data Loader"
+              <v-autocomplete label="Train Data Loader"
                 v-model="jobConfigs.dataLoader"
                 :items="configChoices.dataLoader"
-                color="jobs" box></v-select>
+                color="jobs" box></v-autocomplete>
             </v-flex>
             <v-flex xs12 md6>
-              <v-select label="Validation Data Loader"
+              <v-autocomplete label="Validation Data Loader"
                 v-model="jobConfigs.valDataLoader"
                 :items="configChoices.dataLoader"
                 color="jobs" clearable box
-                messages="If not specified, will default to the train data loader"></v-select>
+                messages="If not specified, will default to the train data loader"></v-autocomplete>
             </v-flex>
             <v-flex xs12 md6>
-              <v-select label="Model"
+              <v-autocomplete label="Model"
                 v-model="jobConfigs.model"
                 :items="configChoices.model"
-                color="jobs" box></v-select>
+                color="jobs" box></v-autocomplete>
             </v-flex>
             <v-flex xs12 md6>
               <v-select label="Optimizer"
@@ -57,7 +57,8 @@
               <v-text-field label="Batch Size"
                 v-model="jobConfigs.batchSize"
                 type="number"
-                color="jobs" box></v-text-field>
+                color="jobs" box
+                messages="The batch size per node"></v-text-field>
             </v-flex>
             <v-flex xs12 md6>
               <v-text-field label="Epochs"
@@ -69,7 +70,8 @@
               <v-text-field label="Learning Rate"
                 v-model="jobConfigs.learningRate"
                 type="number"
-                color="jobs" box></v-text-field>
+                color="jobs" box
+                messages="Learning rate is scaled up by the number of nodes"></v-text-field>
             </v-flex>
             <v-flex xs12 md6>
               <v-select label="Node Type"
@@ -98,6 +100,7 @@
         <v-btn color="success"
           outline large
           :disabled="!isValid">
+          <v-icon style="margin-right: 5px">mdi-animation-play</v-icon>
           Create & Run
         </v-btn>
       </v-card-actions>
@@ -106,6 +109,9 @@
 </template>
 
 <script>
+import axios from 'axios'
+import { Promise } from 'q';
+
 export default {
   name: 'CreateJob',
   data() {
@@ -116,7 +122,7 @@ export default {
         model: '',
         dataLoader: '',
         valDataLoader: null,
-        optimizer: '',
+        optimizer: 'sgd',
         learningRate: 1e-3,
         snapshotInterval: 5,
         batchSize: 32,
@@ -139,18 +145,111 @@ export default {
         dataLoader: [],
         model: [],
         nodes: []
-      }
+      },
+      job: null
     }
   },
   computed: {
     isValid() {
       var configs = this.jobConfigs
-      return configs.name && configs.batchSize > 0
-        && configs.trainDataset && configs.dataLoader
+      return configs.batchSize > 0
+        && configs.dataset && configs.dataLoader
         && configs.valDataset && configs.optimizer 
         && configs.model && configs.epochs > 0
         && configs.learningRate > 0
     }
+  },
+  methods: {
+    submit() {
+      var url = process.env.VUE_APP_APIURL + 'jobs/submit/training'
+      this.job = null
+      var component = this
+      return axios.post(url, this.jobConfigs, {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      }).then(response => {
+        var job = response.job
+        component.job = job
+      }).catch(error => {
+        console.error(error)
+        component.$store.commit('showError', 'An error occured. The job may not have been submitted')
+      })
+    },
+    run() {
+      var url = process.env.VUE_APP_APIURL + 'jobs/start/training'
+      var component = this
+      if (!this.job) return
+      return axios.post(url, this.job, {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      }).then(response => {
+        
+      }).catch(error => {
+        console.error(error)
+        component.$store.commit('showError', 'An error occured. The job may not have been started')
+      })
+    },
+    fetchConfigChoices() {
+      Promise.all([
+        this.fetchModelChoices(), this.fetchDatasetChoices(),
+        this.fetchLoaderChoices(), this.fetchOptimizerChoices()
+      ]).catch(error => {
+        console.error(error)
+      })
+    },
+    fetchModelChoices() {
+      var url = process.env.VUE_APP_APIURL + 'models/list?name_only=true'
+      var component = this
+      return axios.get(url, {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      }).then(response => {
+        var models = response.data.models
+        component.configChoices.model = models
+      })
+    },
+    fetchDatasetChoices() {
+      var url = process.env.VUE_APP_APIURL + 'datasets/list?name_only=true'
+      var component = this
+      return axios.get(url, {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      }).then(response => {
+        var datasets = response.data.datasets
+        component.configChoices.dataset = datasets
+      })
+    },
+    fetchLoaderChoices() {
+      var url = process.env.VUE_APP_APIURL + 'loaders/list?name_only=true'
+      var component = this
+      return axios.get(url, {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      }).then(response => {
+        var loaders = response.data.loaders
+        component.configChoices.dataLoader = loaders
+      })
+    },
+    fetchOptimizerChoices() {
+      var url = process.env.VUE_APP_APIURL + 'optimizers/list'
+      var component = this
+      return axios.get(url, {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      }).then(response => {
+        var optimizers = response.data.optimizers
+        component.configChoices.optimizer = optimizers
+      })
+    }
+  },
+  mounted() {
+    this.fetchConfigChoices()
   }
 }
 </script>

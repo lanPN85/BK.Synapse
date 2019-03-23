@@ -8,7 +8,7 @@ from subprocess import Popen
 
 from apis import utils
 from apis.logs import err_logged
-from bkdigits.jobs.model import TrainingJobConfig, TrainingJobConfigSchema, TrainingJob, TrainingJobMetadata
+from bkdigits.jobs.model import TrainingJobConfig, TrainingJobConfigSchema, TrainingJob, TrainingJobMetadata, TrainingJobMetadataSchema
 
 
 class SubmitTrainingJob(Resource):
@@ -29,7 +29,8 @@ class SubmitTrainingJob(Resource):
         return {
             'msg': 'Success',
             'job': {
-                'id': job.id
+                'id': job.id,
+                'meta': TrainingJobMetadataSchema().dump(job.meta).data
             }
         }
 

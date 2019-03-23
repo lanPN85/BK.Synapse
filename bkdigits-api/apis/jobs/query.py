@@ -43,3 +43,16 @@ class ListJobs(Resource):
         return {
             'jobs': objs
         }
+
+
+class ListOptimizers(Resource):
+    @err_logged
+    def get(self):
+        return {
+            'optimizers': [
+                {'value': 'sgd', 'text': 'SGD'},
+                {'value': 'adam', 'text': 'Adam'},
+                {'value': 'adadelta', 'text': 'Adadelta'},
+                {'value': 'rmsprop', 'text': 'RMSProp'},
+            ]
+        }
