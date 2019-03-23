@@ -23,6 +23,8 @@
           id="src-dropzone" ref="srcDropzone"
           v-on:vdropzone-file-added="droppedFiles+=1"
           v-on:vdropzone-removed-file="droppedFiles-=1"
+          v-on:vdropzone-queue-complete="dzQueueComplete"
+          v-on:vdropzone-max-files-exceeded="dzRemoveFile"
           :useCustomSlot="true">
           <div>
             <h2 class="datasets--text">Drag file to upload</h2>
@@ -35,7 +37,9 @@
         <v-spacer></v-spacer>
         <v-btn color="success"
           outline large
-          :disabled="!isValid">
+          :disabled="!isValid"
+          @click="submit"
+          :loading="loading">
           Create
         </v-btn>
       </v-card-actions>
@@ -52,6 +56,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import Dropzone from 'vue2-dropzone'
 
 export default {
@@ -65,14 +70,15 @@ export default {
         name: ''
       },
       lastCreated: null,
-      droppedFiles: 0
+      droppedFiles: 0,
+      defaultMeta: null,
+      loading: false
     }
   },
   computed: {
     srcFileDropOpts() {
-      var uploadUrl = process.env.VUE_APP_API_URL + '/datasets/upload/' + this.datasetMeta.name
       return {
-        url: uploadUrl,
+        url: '/',
         maxFilesize: 30 * 1024,
         autoProcessQueue: false,
         maxFiles: 1,
@@ -80,6 +86,7 @@ export default {
         forceChunking: true,
         paramName: 'file',
         addRemoveLinks: true,
+        timeout: 30 * 60 * 1000,
         headers: {
           'Access-Control-Allow-Origin': '*'
         },
@@ -92,7 +99,40 @@ export default {
     }
   },
   mounted() {
-    
+    this.defaultMeta = Object.assign({}, this.datasetMeta)
+  },
+  methods: {
+    submit() {
+      var component = this
+      this.lastCreated = null
+      this.loading = true
+      this.sendMeta().then(() => {
+        var uploadUrl = process.env.VUE_APP_APIURL + 'datasets/upload/' + component.datasetMeta.name + '/files'
+        component.$refs.srcDropzone.setOption('url', uploadUrl)
+        component.$refs.srcDropzone.processQueue()
+      }).catch(error => {
+        console.error(error)
+        component.$store.commit('showError', 'An error occurred. The dataset was not created.')
+      })
+    },
+    sendMeta() {
+      var url = process.env.VUE_APP_APIURL + 'datasets/submit'
+      var component = this
+      return axios.post(url, this.datasetMeta, {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      })
+    },
+    dzQueueComplete() {
+      this.$refs.srcDropzone.removeAllFiles()
+      this.loading = false
+      this.lastCreated = Object.assign({}, this.datasetMeta)
+      this.datasetMeta = Object.assign({}, this.defaultMeta)
+    },
+    dzRemoveFile(file) {
+      this.$refs.srcDropzone.removeFile(file)
+    }
   }
 }
 </script>
