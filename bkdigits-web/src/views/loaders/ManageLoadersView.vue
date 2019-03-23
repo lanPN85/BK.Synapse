@@ -1,5 +1,5 @@
 <template>
-  <div class="manage-model-view">
+  <div class="manage-loader-view">
     <app-header></app-header>
     <v-content>
       <v-container fluid grid-list-xl>
@@ -17,7 +17,7 @@
 import AppHeader from '@/components/AppHeader'
 
 export default {
-  name: 'ManageModelsView',
+  name: 'ManageLoadersView',
   components: {
     AppHeader
   }

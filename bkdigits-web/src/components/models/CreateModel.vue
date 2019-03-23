@@ -11,7 +11,7 @@
         <h3>Model info</h3>
         <form>
           <v-text-field v-model="modelMeta.name"
-            label="Model name"
+            label="Model name" autofocus
             messages="A name for the model, eg. ResNet50-PyTorch"
             color="info" box></v-text-field>
           <v-select v-model="modelMeta.backend"

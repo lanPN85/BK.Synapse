@@ -38,7 +38,8 @@
               <v-select label="Validation Data Loader"
                 v-model="jobConfigs.valDataLoader"
                 :items="configChoices.dataLoader"
-                color="jobs"></v-select>
+                color="jobs" clearable
+                messages="If not specified, will default to the train data loader"></v-select>
             </v-flex>
             <v-flex xs12 md6>
               <v-select label="Model"
@@ -143,7 +144,12 @@ export default {
   },
   computed: {
     isValid() {
-      return true
+      var configs = this.jobConfigs
+      return configs.name && configs.batchSize > 0
+        && configs.trainDataset && configs.dataLoader
+        && configs.valDataset && configs.optimizer 
+        && configs.model && configs.epochs > 0
+        && configs.learningRate > 0
     }
   }
 }

@@ -20,7 +20,7 @@
 import AppHeader from '@/components/AppHeader'
 import ActionList from '@/components/ActionList'
 import CreatePanel from '@/components/CreatePanel'
-import ActiveJobsPanel from '@/components/ActiveJobsPanel'
+import ActiveJobsPanel from '@/components/jobs/ActiveJobsPanel'
 
 export default {
   name: 'Home',

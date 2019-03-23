@@ -3,10 +3,10 @@
     <v-card>
       <v-card-title>
         <div>
-          <p class="headline">
-            Create 
-            <span><v-icon>mdi-plus</v-icon></span>
-          </p>
+          <span class="headline">
+            New
+          </span>
+          <v-icon>mdi-plus</v-icon>
         </div>
       </v-card-title>
 
