@@ -39,9 +39,7 @@ class DataLoader:
         return dataset
 
     def save(self):
-        os.makedirs(self.path, exist_ok=True)
-        with open(self.content_path, 'wt') as f:
-            f.write(self.content)
+        os.makedirs(self.src_path, exist_ok=True)
 
     @classmethod
     def load(cls, name):
