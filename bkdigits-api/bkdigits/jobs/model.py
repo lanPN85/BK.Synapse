@@ -77,6 +77,10 @@ class TrainingJobStatus:
         self.epoch = epoch
         self.message = message
         self.metrics = metrics
+    
+    @property
+    def is_active(self):
+        return self.state in ('EVALUATING', 'TRAINING', 'EVALUATED')
 
 
 class TrainingJobStatusSchema(Schema):
@@ -165,6 +169,9 @@ class TrainingJob:
             f.write(s)
 
     def get_status(self):
+        if not os.path.exists(self.status_path):
+            return TrainingJobStatus('CREATED')
+
         with open(self.status_path, 'rt') as f:
             d = json.load(f)
         return TrainingJobStatusSchema().load(d).data

@@ -11,10 +11,10 @@ from flask_cors import CORS
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
-from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob
-from apis.models import SubmitModel, UploadModelSrc, UploadModelWeights
-from apis.datasets import SubmitDataset, UploadDatasetFiles
-from apis.loaders import SubmitLoader, UploadLoaderSrc
+from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob, ListJobs
+from apis.models import SubmitModel, UploadModelSrc, UploadModelWeights, ListModels, ModelExists
+from apis.datasets import SubmitDataset, UploadDatasetFiles, ListDatasets, DatasetExists
+from apis.loaders import SubmitLoader, UploadLoaderSrc, LoaderExists, ListLoaders
 
 app = Flask(__name__)
 
@@ -35,16 +35,23 @@ api = Api(app)
 api.add_resource(SubmitTrainingJob, '/jobs/submit/training')
 api.add_resource(StartTrainingJob, '/jobs/start/training')
 api.add_resource(StopTrainingJob, '/jobs/stop/training')
+api.add_resource(ListJobs, '/jobs/list')
 
 api.add_resource(SubmitModel, '/models/submit')
 api.add_resource(UploadModelSrc, '/models/upload/<model_name>/src')
 api.add_resource(UploadModelWeights, '/models/upload/<model_name>/weights')
+api.add_resource(ListModels, '/models/list')
+api.add_resource(ModelExists, '/models/exists')
 
 api.add_resource(SubmitDataset, '/datasets/submit')
 api.add_resource(UploadDatasetFiles, '/datasets/upload/<dataset_name>/files')
+api.add_resource(ListDatasets, '/datasets/list')
+api.add_resource(DatasetExists, '/datasets/exists')
 
 api.add_resource(SubmitLoader, '/loaders/submit')
 api.add_resource(UploadLoaderSrc, '/loaders/upload/<loader_name>/src')
+api.add_resource(ListLoaders, '/loaders/list')
+api.add_resource(LoaderExists, '/loaders/exists')
 
 
 def exit():
