@@ -58,10 +58,17 @@
         <div v-if="job.status.message" class="console">
           {{'' + job.status.message}}
         </div>
+
+        <v-card-actions style="overflow-x: auto">
+          <div v-for="metric in job.status.metrics" :key="metric.name">
+            <v-chip><b>{{ formatMetric(metric) }}</b></v-chip>
+          </div>
+        </v-card-actions>
       </v-card-text>
 
       <v-card-actions>
-        <span class="small-text">{{ 'Created at ' + job.meta.createdAt }}</span>
+        <span style="overflow-x: hidden"
+         class="small-text">{{ 'Created at ' + job.meta.createdAt }}</span>
         <v-spacer></v-spacer>
         <v-btn :color="runBtn.btnColor" flat
           @click="runBtn.btnCallback"
@@ -102,6 +109,7 @@
 
 <script>
 import axios from 'axios'
+import {sprintf} from 'sprintf-js'
 import { setTimeout, clearTimeout } from 'timers';
 
 export default {
@@ -201,6 +209,17 @@ export default {
     }
   },
   methods: {
+    formatMetric(metric) {
+      var parts = metric.name.split('_')
+      var fname = ''
+      for (var i=0; i<parts.length; i++) {
+        var s = parts[i]
+        fname += s.charAt(0).toUpperCase() + s.slice(1)
+        if (i < parts.length - 1) fname += ' '
+      }
+
+      return sprintf('%s: %.4f', fname, metric.value)
+    },
     fetchJobStatus() {
       var url = process.env.VUE_APP_APIURL + 'jobs/status?id=' + this.job.id
       var component = this

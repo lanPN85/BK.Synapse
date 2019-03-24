@@ -64,13 +64,24 @@ class TrainingJobConfigSchema(Schema):
         return TrainingJobConfig(**data)
 
 
+class TrainingJobMetric:
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+
+class TrainingJobMetricSchema(Schema):
+    name = fields.Str()
+    value = fields.Float()
+
+
 class TrainingJobStatus:
     def __init__(self, state, 
         iter=0, totalIter=0, 
         epoch=0, message=None, 
         metrics=None, **kwargs):
         if metrics is None:
-            metrics = {}
+            metrics = []
 
         self.state = state
         self.iter = iter
@@ -94,7 +105,7 @@ class TrainingJobStatusSchema(Schema):
     totalIter = fields.Int()
     epoch = fields.Int()
     error = fields.Str()
-    metrics = fields.Dict()
+    metrics = fields.List(fields.Nested(TrainingJobMetricSchema()))
     message = fields.Str()
     isActive = fields.Boolean()
     isStopped = fields.Boolean()

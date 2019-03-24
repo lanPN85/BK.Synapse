@@ -25,7 +25,7 @@ from collections import defaultdict
 
 from apis import utils
 from bkdigits.datasets import Dataset as BkDigitsDataset
-from bkdigits.jobs import TrainingJob, TrainingJobStatus
+from bkdigits.jobs import TrainingJob, TrainingJobStatus, TrainingJobMetric
 from bkdigits.loaders import DataLoader as BkDigitsDataLoader
 from bkdigits.models import Model
 from bkdigits.metrics import UpdatingMetric
@@ -71,9 +71,9 @@ def save_tensorboard_graph(log_writer, model, inp):
 
 @root_node_only
 def save_tensorboard_metrics(log_writer, metrics, epoch, prefix=''):
-    for k, v in metrics.items():
-        log_writer.add_scalar('%s%s' % (prefix, k),
-            v, epoch)
+    for mt in metrics:
+        log_writer.add_scalar('%s%s' % (prefix, mt.name),
+            mt.value, epoch)
 
     
 def log_update_status(job, **kwargs):
@@ -93,8 +93,8 @@ def log_update_status(job, **kwargs):
         'INTERRUPT': logging.WARN
     })
     logger.log(LOG_LEVEL[kwargs['state']], '[{state} I{iter}/{totalIter} E{epoch}/{totalEpoch}] {message}'.format(**kwargs))
-    for k, v in kwargs['metrics'].items():
-        logger.info('\t%s: %.5f' % (k, v))
+    for mt in kwargs['metrics']:
+        logger.info('\t%s: %.5f' % (mt.name, mt.value))
 
 @root_node_only
 def save_snapshot(model, path):
@@ -184,10 +184,11 @@ def main(job):
 
     # Start training
     log_update_status(job, state='TRAINING', message='Starting training...')
+    avg_metrics = []
     for ep in range(job.config.epochs):
         # Check for lock
         if os.path.exists(job.stop_lock_path):
-            log_update_status(job, state='INTERRUPT')
+            log_update_status(job, state='INTERRUPT', metrics=avg_metrics)
             exit(-1)
         
         # Train phase
@@ -214,26 +215,30 @@ def main(job):
                 pass
             
             # Convert Metric to value
-            m_dict = {}
+            m_list = []
             for k, v in metrics.items():
-                m_dict[k] = v.avg
+                m_list.append(TrainingJobMetric(name=k, value=v.avg))
+            m_list.extend(avg_metrics)
 
             log_update_status(job, state='TRAINING',
-                iter=batch_idx+1, totalIter=len(train_loader), epoch=ep+1, metrics=m_dict)
+                iter=batch_idx+1, totalIter=len(train_loader), epoch=ep+1, metrics=m_list)
             # Check for lock
             if os.path.exists(job.stop_lock_path):
-                log_update_status(job, state='INTERRUPT', message="Training interrupted")
+                log_update_status(job, state='INTERRUPT')
                 exit(-1)
         
-        m_dict = {}
+        m_list = []
         for k, v in metrics.items():
-            m_dict[k] = v.avg
-        save_tensorboard_metrics(log_writer, m_dict, ep+1, prefix='train/')
+            m_list.append(TrainingJobMetric(name=k, value=v.avg))
+        m_list.extend(avg_metrics)
+        save_tensorboard_metrics(log_writer, m_list, 
+            ep+1, prefix='train/')
 
         # Eval phase
         torch_model.eval()
         val_metrics = defaultdict(lambda: 0.)
-        log_update_status(job, state='EVALUATING', epoch=ep+1)
+        log_update_status(job, state='EVALUATING', epoch=ep+1, 
+            metrics=avg_metrics)
         for batch_idx, (data, target) in enumerate(val_loader):
             if use_cuda:
                 data, target = data.cuda(), target.cuda()
@@ -252,19 +257,20 @@ def main(job):
             log_update_status(job, state='EVALUATING', epoch=ep+1, iter=batch_idx+1,totalIter=len(val_loader))
             # Check for lock
             if os.path.exists(job.stop_lock_path):
-                log_update_status(job, state='INTERRUPT')
+                log_update_status(job, state='INTERRUPT', metrics=avg_metrics)
                 exit(-1)
         
         # Calculate average for all metrics
-        avg_metrics = {}
+        avg_metrics = []
         for k, v in val_metrics.items():
-            avg_k = '%s' % k
+            avg_k = 'val_%s' % k
             avg_v = v / len(val_loader)
             avg_v = metric_average(avg_v, avg_k)
-            avg_metrics[avg_k] = avg_v
+            avg_metrics.append(TrainingJobMetric(name=avg_k, value=avg_v))
+
             # Check for lock
             if os.path.exists(job.stop_lock_path):
-                log_update_status(job, state='INTERRUPT')
+                log_update_status(job, state='INTERRUPT', metrics=avg_metrics)
                 exit(-1)
         log_update_status(job, state='EVALUATED', epoch=ep+1,
             iter=len(val_loader), metrics=avg_metrics, 
@@ -277,11 +283,12 @@ def main(job):
                 'epoch-%d.pth' % (ep+1))
             save_snapshot(torch_model, snap_path)
             log_update_status(job, state='SAVING', 
-                message='Saved model snapshot')
+                message='Saved model snapshot', 
+                metrics=avg_metrics)
     
     if log_writer:
         log_writer.close()
-    log_update_status(job, state='FINISHED')
+    log_update_status(job, state='FINISHED', metrics=avg_metrics)
 
 
 if __name__ == "__main__":
