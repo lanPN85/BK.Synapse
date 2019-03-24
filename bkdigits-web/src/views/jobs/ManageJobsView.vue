@@ -5,7 +5,7 @@
       <v-container fluid grid-list-xl>
         <v-layout row wrap>
           <v-flex xs12>
-            
+            <manage-jobs></manage-jobs>
           </v-flex>
         </v-layout>
       </v-container>
@@ -15,11 +15,12 @@
 
 <script>
 import AppHeader from '@/components/AppHeader'
+import ManageJobs from '@/components/jobs/ManageJobs'
 
 export default {
   name: 'ManageJobsView',
   components: {
-    AppHeader
+    AppHeader, ManageJobs
   }
 }
 </script>

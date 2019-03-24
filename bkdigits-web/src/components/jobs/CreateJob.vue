@@ -94,16 +94,28 @@
         <v-spacer></v-spacer>
         <v-btn color="info"
           outline large
-          :disabled="!isValid">
+          :disabled="!isValid"
+          @click="submit"
+          :loading="loading">
           Create
         </v-btn>
         <v-btn color="success"
           outline large
-          :disabled="!isValid">
+          :disabled="!isValid"
+          @click="submitAndRun"
+          :loading="loading">
           <v-icon style="margin-right: 5px">mdi-animation-play</v-icon>
           Create & Run
         </v-btn>
       </v-card-actions>
+
+      <v-card-text v-if="job">
+        <p>
+          <v-icon small color="success">mdi-check</v-icon>
+          {{ 'Job `' + job.id +'` has been created' }}.
+          <a href="/jobs/edit">Manage</a>
+        </p>
+      </v-card-text>
     </v-card>
   </div>
 </template>
@@ -146,7 +158,8 @@ export default {
         model: [],
         nodes: []
       },
-      job: null
+      job: null,
+      loading: false
     }
   },
   computed: {
@@ -164,32 +177,43 @@ export default {
       var url = process.env.VUE_APP_APIURL + 'jobs/submit/training'
       this.job = null
       var component = this
+      this.loading = true
       return axios.post(url, this.jobConfigs, {
         headers: {
           'Access-Control-Allow-Origin': '*'
         }
       }).then(response => {
-        var job = response.job
+        var job = response.data.job
         component.job = job
       }).catch(error => {
         console.error(error)
         component.$store.commit('showError', 'An error occured. The job may not have been submitted')
+      }).then(() => {
+        component.loading = false
       })
     },
     run() {
       var url = process.env.VUE_APP_APIURL + 'jobs/start/training'
       var component = this
       if (!this.job) return
-      return axios.post(url, this.job, {
+      this.loading = true
+      return axios.post(url, {
+        job: this.job
+      }, {
         headers: {
           'Access-Control-Allow-Origin': '*'
         }
       }).then(response => {
-        
+        component.$router.push('/jobs/edit')
       }).catch(error => {
         console.error(error)
         component.$store.commit('showError', 'An error occured. The job may not have been started')
+      }).then(() => {
+        component.loading = false
       })
+    },
+    submitAndRun() {
+      this.submit().then(this.run)
     },
     fetchConfigChoices() {
       Promise.all([

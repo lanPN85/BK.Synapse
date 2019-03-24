@@ -1,20 +1,19 @@
 <template>
-  <div class="active-jobs-panel">
+  <div class="all-jobs-panel">
     <v-card>
       <v-card-title>
         <div>
           <span class="headline">
-            Active Jobs
+            All Jobs
           </span>
-          <v-icon>mdi-console-line</v-icon>
         </div>
       </v-card-title>
 
-      <jobs-list v-if="activeJobs.list.length > 0" :jobs="activeJobs.list"></jobs-list>
-      
+      <jobs-list v-if="jobs.list.length > 0" :jobs="jobs.list"></jobs-list>
+
       <v-card-text v-else class="text-xs-center">
-        <h3 v-if="!activeJobs.loading">
-          There are no active jobs
+        <h3 v-if="!jobs.loading">
+          There are no jobs yet. <a href="/jobs/new">Create</a>
         </h3>
         <v-progress-circular indeterminate v-else
           large color="primary"></v-progress-circular>
@@ -28,40 +27,40 @@ import axios from 'axios'
 import JobsList from '@/components/jobs/JobsList'
 
 export default {
-  name: 'ActiveJobsPanel',
+  name: 'AllJobsPanel',
   components: {
     JobsList
   },
   data() {
     return {
-      activeJobs: {
+      jobs: {
         list: [],
         loading: false
       }
     }
   },
+  mounted() {
+    this.fetchJobs()
+  },
   methods: {
-    fetchActiveJobs() {
-      var url = process.env.VUE_APP_APIURL + 'jobs/list?active_only=true'
+    fetchJobs() {
+      var url = process.env.VUE_APP_APIURL + 'jobs/list'
       var component = this
 
-      this.activeJobs.loading = true
+      this.jobs.loading = true
       return axios.get(url, {
         headers: {
           'Access-Control-Allow-Origin': '*'
         }
       }).then(response => {
-        var activeJobs = response.data.jobs
-        component.activeJobs.list = activeJobs
+        var jobs = response.data.jobs
+        component.jobs.list = jobs
       }).catch(error => {
         console.error(error)
       }).then(() => {
-        component.activeJobs.loading = false
+        component.jobs.loading = false
       })
     }
-  },
-  mounted() {
-    this.fetchActiveJobs()
   }
 }
 </script>
