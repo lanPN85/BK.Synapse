@@ -2,6 +2,7 @@ import uuid
 import os
 import json
 import toml
+import shutil
 
 from datetime import datetime
 from marshmallow import Schema, fields, post_load
@@ -67,7 +68,7 @@ class TrainingJobStatus:
     def __init__(self, state, 
         iter=0, totalIter=0, 
         epoch=0, message=None, 
-        metrics=None):
+        metrics=None, **kwargs):
         if metrics is None:
             metrics = {}
 
@@ -79,8 +80,12 @@ class TrainingJobStatus:
         self.metrics = metrics
     
     @property
-    def is_active(self):
-        return self.state in ('EVALUATING', 'TRAINING', 'EVALUATED')
+    def isActive(self):
+        return self.state in ('EVALUATING', 'TRAINING', 'EVALUATED', 'SETUP')
+
+    @property
+    def isStopped(self):
+        return self.state in ('INTERRUPT', 'ERROR', 'FINISHED')
 
 
 class TrainingJobStatusSchema(Schema):
@@ -90,6 +95,9 @@ class TrainingJobStatusSchema(Schema):
     epoch = fields.Int()
     error = fields.Str()
     metrics = fields.Dict()
+    message = fields.Str()
+    isActive = fields.Boolean()
+    isStopped = fields.Boolean()
 
     @post_load
     def make_obj(self, data):
@@ -118,7 +126,7 @@ class TrainingJob:
 
     @classmethod
     def from_config(cls, config, meta):
-        job_id = uuid.uuid4()
+        job_id = str(uuid.uuid4())
         return cls(job_id, config, meta)
     
     def copy(self):
@@ -157,6 +165,10 @@ class TrainingJob:
         return os.path.join(self.path, 'output')
 
     @property
+    def stop_lock_path(self):
+        return os.path.join(self.path, 'stop.lock')
+
+    @property
     def exists(self):
         return os.path.exists(self.path)
 
@@ -167,6 +179,14 @@ class TrainingJob:
         with open(self.history_path, 'at') as f:
             s = '''# ===Start===\n%s# ===End===\n\n''' % toml.dumps({'entry': [d]})
             f.write(s)
+
+    def lock(self):
+        with open(self.stop_lock_path, 'wt') as f:
+            f.write('===')
+
+    def unlock(self):
+        if os.path.exists(self.stop_lock_path):
+            os.remove(self.stop_lock_path)
 
     def get_status(self):
         if not os.path.exists(self.status_path):
@@ -180,10 +200,21 @@ class TrainingJob:
         with open(self.history_path, 'rt') as f:
             return toml.load(f).get('entry', [])
 
+    def clear_outputs(self):
+        shutil.rmtree(self.output_path, ignore_errors=True)
+        shutil.rmtree(self.log_path, ignore_errors=True)
+        shutil.rmtree(self.snapshot_path, ignore_errors=True)
+        os.makedirs(self.log_path, exist_ok=True)
+        os.makedirs(self.snapshot_path, exist_ok=True)
+        os.makedirs(self.output_path, exist_ok=True)
+        status = TrainingJobStatus('CREATED')
+        self.update_status(status)
+
     def save(self):
         os.makedirs(self.path, exist_ok=True)
         os.makedirs(self.log_path, exist_ok=True)
         os.makedirs(self.snapshot_path, exist_ok=True)
+        os.makedirs(self.output_path, exist_ok=True)
         
         conf_dict = TrainingJobConfigSchema().dump(self.config).data
         with open(self.config_path, 'wt') as f:
@@ -192,15 +223,22 @@ class TrainingJob:
         meta_dict = TrainingJobMetadataSchema().dump(self.meta).data
         with open(self.meta_path, 'wt') as f:
             json.dump(meta_dict, f, indent=2)
+        
+        if not os.path.exists(self.status_path):
+            status = TrainingJobStatus('CREATED')
+            self.update_status(status)
 
     @classmethod
     def load(cls, job_id):
         job = cls(job_id)
-        with open(job.config_path, 'rt') as f:
-            job.config = TrainingJobConfigSchema().load(json.load(f)).data
-        with open(job.meta_path, 'rt') as f:
-            job.meta = TrainingJobMetadataSchema().load(json.load(f)).data
-        return job
+        try:
+            with open(job.config_path, 'rt') as f:
+                job.config = TrainingJobConfigSchema().load(json.load(f)).data
+            with open(job.meta_path, 'rt') as f:
+                job.meta = TrainingJobMetadataSchema().load(json.load(f)).data
+            return job
+        except:
+            return None
 
 
 class TrainingJobSchema(Schema):

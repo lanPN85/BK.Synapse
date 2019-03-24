@@ -50,7 +50,7 @@ class Model:
                 _ = UserModel.loss
                 model = UserModel()
             if self.has_weights:
-                model.load_state_dict(self.weight_path)
+                model.load_state_dict(torch.load(self.weight_path))
         
         # Avoid polluting path
         sys.path.remove(self.src_path)
