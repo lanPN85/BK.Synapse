@@ -129,15 +129,15 @@ def main(job):
         train_dataset = _loader.get_dataset(_dataset.path)
         val_dataset = _val_loader.get_dataset(_val_dataset.path)
     except (NameError, AttributeError):
-        log_update_status(state='ERROR', message="Invalid data loader")
+        log_update_status(job, state='ERROR', message="Invalid data loader")
         exit(-1)
     
     try:
         # Import model
         torch_model = model.load_model()
     except AttributeError:
-        log_update_status(running=False, 
-            error="Input model must implement loss(output, target)")
+        log_update_status(job, state='ERROR', 
+            message="Input model must implement loss(output, target)")
         exit(-1)
 
     use_cuda = job.config.nodeType == 'gpu'
@@ -185,6 +185,11 @@ def main(job):
     # Start training
     log_update_status(job, state='TRAINING', message='Starting training...')
     for ep in range(job.config.epochs):
+        # Check for lock
+        if os.path.exists(job.stop_lock_path):
+            log_update_status(job, state='INTERRUPT')
+            exit(-1)
+        
         # Train phase
         torch_model.train()
         train_sampler.set_epoch(ep)
@@ -215,6 +220,10 @@ def main(job):
 
             log_update_status(job, state='TRAINING',
                 iter=batch_idx+1, totalIter=len(train_loader), epoch=ep+1, metrics=m_dict)
+            # Check for lock
+            if os.path.exists(job.stop_lock_path):
+                log_update_status(job, state='INTERRUPT', message="Training interrupted")
+                exit(-1)
         
         m_dict = {}
         for k, v in metrics.items():
@@ -241,6 +250,10 @@ def main(job):
                 pass
 
             log_update_status(job, state='EVALUATING', epoch=ep+1, iter=batch_idx+1,totalIter=len(val_loader))
+            # Check for lock
+            if os.path.exists(job.stop_lock_path):
+                log_update_status(job, state='INTERRUPT')
+                exit(-1)
         
         # Calculate average for all metrics
         avg_metrics = {}
@@ -249,6 +262,10 @@ def main(job):
             avg_v = v / len(val_loader)
             avg_v = metric_average(avg_v, avg_k)
             avg_metrics[avg_k] = avg_v
+            # Check for lock
+            if os.path.exists(job.stop_lock_path):
+                log_update_status(job, state='INTERRUPT')
+                exit(-1)
         log_update_status(job, state='EVALUATED', epoch=ep+1,
             iter=len(val_loader), metrics=avg_metrics, 
             totalIter=len(val_loader))
@@ -273,6 +290,6 @@ if __name__ == "__main__":
     try:
         main(job)
     except (KeyboardInterrupt, SystemExit):
-        log_update_status(job, state='INTERRUPT', message="Training interrupted")
+        log_update_status(job, state='INTERRUPT')
     except:
         log_update_status(job, state='ERROR', message=traceback.format_exc())

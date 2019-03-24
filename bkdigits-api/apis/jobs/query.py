@@ -1,5 +1,6 @@
 import flask
 import os
+import time
 import shutil
 
 from flask import current_app
@@ -31,9 +32,19 @@ class ListJobs(Resource):
         objs = []
         for id_ in ids:
             obj = TrainingJob.load(id_)
-            status = obj.get_status()
+            max_retries = 30
+            for i in range(max_retries):
+                try:
+                    status = obj.get_status()
+                    break
+                except Exception as e:
+                    if i == (max_retries - 1):
+                        return {
+                            'msg': 'Can\'t get status'
+                        }, 500
+                time.sleep(0.5)
             if active_only:
-                if not status.is_active:
+                if not status['isActive']:
                     continue
             d = TrainingJobSchema().dump(obj).data
             d['status'] = TrainingJobStatusSchema().dump(status).data
@@ -42,4 +53,43 @@ class ListJobs(Resource):
 
         return {
             'jobs': objs
+        }
+
+
+class GetJobStatus(Resource):
+    @err_logged
+    def get(self):
+        job_id = flask.request.args['id']
+        job = TrainingJob.load(job_id)
+        if job is None:
+            return {
+                'msg': 'Invalid job ID'
+            }, 400
+        
+        max_retries = 30
+        for i in range(max_retries):
+            try:
+                status = job.get_status()
+                break
+            except:
+                if i == (max_retries - 1):
+                    return {
+                        'msg': 'Can\'t get status'
+                    }, 500
+                time.sleep(1)
+        return {
+            'status': TrainingJobStatusSchema().dump(status).data
+        }
+
+
+class ListOptimizers(Resource):
+    @err_logged
+    def get(self):
+        return {
+            'optimizers': [
+                {'value': 'sgd', 'text': 'SGD'},
+                {'value': 'adam', 'text': 'Adam'},
+                {'value': 'adadelta', 'text': 'Adadelta'},
+                {'value': 'rmsprop', 'text': 'RMSProp'},
+            ]
         }

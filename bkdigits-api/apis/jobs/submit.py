@@ -1,6 +1,7 @@
 import flask
 import os
 import signal
+import logging
 
 from flask import current_app
 from flask_restful import Resource
@@ -23,7 +24,7 @@ class SubmitTrainingJob(Resource):
             }, 400
 
         meta = TrainingJobMetadata()
-        job = TrainingJob.from_config(config, meta)
+        job = TrainingJob.from_config(train_config, meta)
         job.save()
 
         return {
@@ -37,10 +38,18 @@ class SubmitTrainingJob(Resource):
 class StartTrainingJob(Resource):
     @err_logged
     def post(self):
+        logger = logging.getLogger('app')
         payload = flask.request.get_json()
         job_id = payload['job']['id']
 
         job = TrainingJob.load(job_id)
+        if job is None:
+            return {
+                'msg': 'Invalid job ID'
+            }, 400
+        
+        job.clear_outputs()
+        job.unlock()
 
         # Spawn horovod subprocess
         host_list = ['localhost:1']
@@ -54,11 +63,14 @@ class StartTrainingJob(Resource):
             'train.py')
         
         cmd = [
-            'mpirun', '-np', str(workers), '-H', host_str,
+            'mpirun --allow-run-as-root', 
+            '-np', str(workers), '-H', host_str,
             worker_exc, '--job-id', job.id
         ]
+        cmd = ' '.join(cmd)
+        logger.debug(cmd)
         proc = Popen(cmd, shell=True)
-        job.meta.pid = proc.pid
+        job.meta['pid'] = proc.pid
         job.save()
 
         return {
@@ -73,9 +85,12 @@ class StopTrainingJob(Resource):
         job_id = payload['job']['id']
 
         job = TrainingJob.load(job_id)
-        if job.meta.pid is not None:
-            os.kill(job.meta.pid, signal.SIGTERM)
-            os.waitpid(job.meta.pid)
+        if job is None:
+            return {
+                'msg': 'Invalid job ID'
+            }, 400
+        
+        job.lock()
 
         return {
             'msg': 'Success'
