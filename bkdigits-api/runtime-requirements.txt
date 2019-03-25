@@ -3,4 +3,4 @@ scikit-learn
 opencv-python
 opencv-contrib-python
 pandas
-dateutils
+python-dateutils

@@ -41,11 +41,11 @@ RUN mkdir /tmp/openmpi && \
     ldconfig && \
     rm -rf /tmp/openmpi
 
+RUN pip3 install setuptools
 RUN pip3 install torch==${PYTORCH_VERSION} torchvision\
     ${TENSORFLOW_VARIANT}==${TENSORFLOW_VERSION} 'numpy<1.15.0'
 ENV HOROVOD_WITH_TENSORFLOW=1\
     HOROVOD_WITH_PYTORCH=1\
-    HOROVOD_WITH_MXNET=0\
     HOROVOD_GPU_ALLREDUCE=NCCL
 RUN ldconfig /usr/local/cuda-9.0/targets/x86_64-linux/lib/stubs &&\
     pip3 install --no-cache-dir horovod && ldconfig
@@ -54,6 +54,8 @@ RUN ldconfig /usr/local/cuda-9.0/targets/x86_64-linux/lib/stubs &&\
 WORKDIR /app
 COPY requirements.txt /app/
 RUN pip3 install -r requirements.txt
+COPY runtime-requirements.txt /app/
+RUN pip3 install -r runtime-requirements.txt
 
 ENV SSHDIR ${HOME}/.ssh/
 RUN mkdir -p ${SSHDIR}
