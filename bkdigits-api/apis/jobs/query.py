@@ -23,7 +23,7 @@ class ListJobs(Resource):
 
         ids = os.listdir(ROOT_DIR)
         ids = filter(lambda x: os.path.isdir(os.path.join(ROOT_DIR, x)), ids)
-        ids = sorted(ids, key=lambda x: x.meta.createdAt, reverse=True)
+        ids = sorted(ids)
         if id_only:
             return {
                 'jobs': ids
@@ -49,6 +49,7 @@ class ListJobs(Resource):
             d = TrainingJobSchema().dump(obj).data
             d['status'] = TrainingJobStatusSchema().dump(status).data
             objs.append(d)
+        objs = sorted(objs, , key=lambda x: x['meta']['createdAt'], reverse=True)
         objs = objs[offset:offset + max_count]
 
         return {
