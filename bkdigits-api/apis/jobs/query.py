@@ -23,7 +23,7 @@ class ListJobs(Resource):
 
         ids = os.listdir(ROOT_DIR)
         ids = filter(lambda x: os.path.isdir(os.path.join(ROOT_DIR, x)), ids)
-        ids = sorted(ids)
+        ids = sorted(ids, key=lambda x: x.meta.createdAt, reverse=True)
         if id_only:
             return {
                 'jobs': ids
