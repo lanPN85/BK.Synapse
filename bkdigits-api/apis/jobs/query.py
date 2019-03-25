@@ -49,7 +49,7 @@ class ListJobs(Resource):
             d = TrainingJobSchema().dump(obj).data
             d['status'] = TrainingJobStatusSchema().dump(status).data
             objs.append(d)
-        objs = sorted(objs, , key=lambda x: x['meta']['createdAt'], reverse=True)
+        objs = sorted(objs, key=lambda x: x['meta']['createdAt'], reverse=True)
         objs = objs[offset:offset + max_count]
 
         return {
