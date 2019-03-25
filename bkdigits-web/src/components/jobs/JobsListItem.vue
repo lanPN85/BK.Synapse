@@ -72,8 +72,7 @@
         <v-spacer></v-spacer>
         <v-btn :color="runBtn.btnColor" flat
           @click="runBtn.btnCallback"
-          :loading="loading.startStop"
-          v-if="job.status.state != 'CREATED'">
+          :loading="loading.startStop">
           <v-icon style="margin-right: 5px">{{ runBtn.btnIcon }}</v-icon>
           {{ runBtn.btnText }}
         </v-btn>
