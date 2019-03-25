@@ -200,7 +200,15 @@ def main(job):
         metrics = defaultdict(lambda: UpdatingMetric())
         for batch_idx, (data, target) in enumerate(train_loader):
             if use_cuda:
-                data, target = data.cuda(), target.cuda()
+                if isinstance(data, list) or isinstance(data, tuple):
+                    data = list(map(lambda x: x.cuda(), data))
+                else:
+                    data = data.cuda()
+                
+                if isinstance(target, list) or isinstance(target, tuple):
+                    target = list(map(lambda x: x.cuda(), target))
+                else:
+                    target = target.cuda()
         
             optimizer.zero_grad()
             output = torch_model(data)
