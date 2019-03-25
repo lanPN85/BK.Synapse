@@ -179,7 +179,10 @@ def main(job):
     first_batch, _ = next(iter(val_loader))
     if use_cuda:
         first_batch = first_batch.cuda()
-    save_tensorboard_graph(log_writer, torch_model, first_batch)
+    try:
+        save_tensorboard_graph(log_writer, torch_model, first_batch)
+    except RuntimeError:
+        pass
     del first_batch
 
     # Start training
