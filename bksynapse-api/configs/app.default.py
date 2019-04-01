@@ -13,9 +13,6 @@ BACKEND_WORKER_DIRS = {
     'pytorch': './bin/pytorch'
 }
 
-NODES_DB_HOST = 'app-node-db'
-NODES_DB_PORT = 6379
-
 JWT_TOKEN_LOCATION = ['headers']
 JWT_SECRET_KEY = os.environ.get('APP_JWT_KEY', None)
 JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=6)

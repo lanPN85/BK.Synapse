@@ -7,7 +7,7 @@ from flask_restful import Resource
 
 from apis import utils
 from apis.logs import err_logged
-from bkdigits.models import Model, ModelSchema
+from bksyn.models import Model, ModelSchema
 
 
 class SubmitModel(Resource):

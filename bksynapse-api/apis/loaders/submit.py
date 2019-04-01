@@ -7,7 +7,7 @@ from flask_restful import Resource
 
 from apis import utils
 from apis.logs import err_logged
-from bkdigits.loaders import DataLoader, DataLoaderSchema
+from bksyn.loaders import DataLoader, DataLoaderSchema
 
 
 class SubmitLoader(Resource):

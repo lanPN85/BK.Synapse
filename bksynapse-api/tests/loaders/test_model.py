@@ -2,10 +2,10 @@ import unittest
 import os
 import sys
 sys.path.append('.')
-os.environ['BKDIGITS_DATA_ROOT'] = './tests/data'
+os.environ['BKSYN_DATA_ROOT'] = './tests/data'
 
-from bkdigits.loaders import DataLoader
-from bkdigits.datasets import Dataset as BkDigitsDataset
+from bksyn.loaders import DataLoader
+from bksyn.datasets import Dataset as BkDigitsDataset
 
 
 class TestLoaderModel(unittest.TestCase):

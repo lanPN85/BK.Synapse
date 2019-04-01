@@ -145,7 +145,7 @@ class TrainingJob:
 
     @property
     def path(self):
-        return os.path.join(os.environ['BKDIGITS_DATA_ROOT'], 'jobs', self.id)
+        return os.path.join(os.environ['BKSYN_DATA_ROOT'], 'jobs', self.id)
 
     @property
     def log_path(self):

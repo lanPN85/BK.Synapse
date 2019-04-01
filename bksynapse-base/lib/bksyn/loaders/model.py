@@ -11,7 +11,7 @@ class DataLoader:
 
     @property
     def path(self):
-        return os.path.join(os.environ['BKDIGITS_DATA_ROOT'], 'dataloaders', self.name)
+        return os.path.join(os.environ['BKSYN_DATA_ROOT'], 'dataloaders', self.name)
 
     @property
     def src_path(self):
@@ -25,13 +25,20 @@ class DataLoader:
     def exists(self):
         return os.path.exists(self.path)
 
-    def get_dataset(self, dataset_path):
-        model = None
+    def get_dataset(self, dataset_path, val=False):
+        dataset = None
         sys.path.insert(0, self.src_path)
         
         with open(self.loader_def_path, 'rt') as f:
             exec(f.read(), globals())
-            dataset = UserDataset(dataset_path)
+            if val:
+                try:
+                    dataset = UserValDataset(dataset_path)
+                except NameError:
+                    val = false
+
+            if not val:
+                dataset = UserDataset(dataset_path)
         
         # Avoid polluting path
         sys.path.remove(self.src_path)

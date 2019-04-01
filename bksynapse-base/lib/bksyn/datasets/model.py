@@ -11,7 +11,7 @@ class Dataset:
 
     @property
     def path(self):
-        return os.path.join(os.environ['BKDIGITS_DATA_ROOT'], 'datasets', self.name)
+        return os.path.join(os.environ['BKSYN_DATA_ROOT'], 'datasets', self.name)
     
     @property
     def exists(self):

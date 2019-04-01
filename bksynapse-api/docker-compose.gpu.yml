@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   app-main:
-    image: bkdigits/apis:$APP_VERSION-gpu
+    image: bksynapse/apis:$VERSION-gpu
     build: 
       context: .
       dockerfile: Dockerfile-GPU

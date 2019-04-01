@@ -7,10 +7,10 @@ from flask_restful import Resource
 
 from apis import utils
 from apis.logs import err_logged
-from bkdigits.loaders import DataLoader, DataLoaderSchema
+from bksyn.loaders import DataLoader, DataLoaderSchema
 
 
-ROOT_DIR = os.path.join(os.environ['BKDIGITS_DATA_ROOT'], 'dataloaders')
+ROOT_DIR = os.path.join(os.environ['BKSYN_DATA_ROOT'], 'dataloaders')
 
 class ListLoaders(Resource):
     @err_logged

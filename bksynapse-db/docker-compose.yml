@@ -1,0 +1,14 @@
+version: "3.5"
+
+volumes:
+  nodes-db-data:
+
+services:
+  nodes-db:
+    image: mongo:latest
+    ports:
+      - 17017:27017
+    volumes:
+      - type: volume
+        target: /data/db
+        source: nodes-db-data

@@ -1,0 +1,17 @@
+version: "3.5"
+
+services:
+  node:
+    build: .
+    image: bksynapse/node:$VERSION
+    ports:
+      - 17992:17992
+    volumes:z
+      - type: bind
+        source: /mnt/bksynapse
+        target: /data
+    environment:
+      - BKSYN_DATA_DIR=/data
+      - BKSYN_NODE_ADDRESS=127.0.0.1
+      - BKSYN_NODE_TYPE=cpu
+    network_mode: host

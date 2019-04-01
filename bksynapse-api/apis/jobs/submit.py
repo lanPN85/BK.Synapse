@@ -9,7 +9,7 @@ from subprocess import Popen
 
 from apis import utils
 from apis.logs import err_logged
-from bkdigits.jobs.model import TrainingJobConfig, TrainingJobConfigSchema, TrainingJob, TrainingJobMetadata, TrainingJobMetadataSchema
+from bksyn.jobs.model import TrainingJobConfig, TrainingJobConfigSchema, TrainingJob, TrainingJobMetadata, TrainingJobMetadataSchema
 
 
 class SubmitTrainingJob(Resource):

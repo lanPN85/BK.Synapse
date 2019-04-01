@@ -1,14 +1,11 @@
 version: "3.5"
 
-volumes:
-  app-nodes-db-data:
-
 services:
   app-main:
     build: .
-    image: bkdigits/system:$APP_VERSION
+    image: bksynapse/system:$VERSION
     environment:
-      - BKDIGITS_DATA_ROOT=/app/data
+      - BKSYN_DATA_ROOT=/data
       - APP_JWT_KEY=dsfkjoj3nr034n1  # Change these in prod
     volumes:
       - type: bind
@@ -18,17 +15,7 @@ services:
         target: /app/configs
         source: ./configs
       - type: bind
-        target: /app/data
-        source: ./data
-    ports:
-      - 17000:5000
-    depends_on:
-      - app-nodes-db
-  app-nodes-db:
-    image: mongo:latest
-    ports:
-      - 17001:27017
-    volumes:
-      - type: volume
-        target: /data/db
-        source: app-nodes-db-data
+        target: /data
+        source: /mnt/bksynapse
+    network_mode: host
+  

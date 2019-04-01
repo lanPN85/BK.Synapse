@@ -7,10 +7,10 @@ from flask_restful import Resource
 
 from apis import utils
 from apis.logs import err_logged
-from bkdigits.models import Model, ModelSchema
+from bksyn.models import Model, ModelSchema
 
 
-ROOT_DIR = os.path.join(os.environ['BKDIGITS_DATA_ROOT'], 'models')
+ROOT_DIR = os.path.join(os.environ['BKSYN_DATA_ROOT'], 'models')
 
 class ListModels(Resource):
     @err_logged

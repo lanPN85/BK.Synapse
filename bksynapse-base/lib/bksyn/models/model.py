@@ -13,7 +13,7 @@ class Model:
 
     @property
     def path(self):
-        return os.path.join(os.environ['BKDIGITS_DATA_ROOT'], 'models', self.name)
+        return os.path.join(os.environ['BKSYN_DATA_ROOT'], 'models', self.name)
 
     @property
     def src_path(self):

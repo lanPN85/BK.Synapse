@@ -8,10 +8,10 @@ from flask_restful import Resource
 
 from apis import utils
 from apis.logs import err_logged
-from bkdigits.jobs import TrainingJob, TrainingJobSchema, TrainingJobStatusSchema
+from bksyn.jobs import TrainingJob, TrainingJobSchema, TrainingJobStatusSchema
 
 
-ROOT_DIR = os.path.join(os.environ['BKDIGITS_DATA_ROOT'], 'jobs')
+ROOT_DIR = os.path.join(os.environ['BKSYN_DATA_ROOT'], 'jobs')
 
 class ListJobs(Resource):
     @err_logged

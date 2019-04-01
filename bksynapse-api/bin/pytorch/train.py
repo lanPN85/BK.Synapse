@@ -24,11 +24,11 @@ from logzero import logger
 from collections import defaultdict
 
 from apis import utils
-from bkdigits.datasets import Dataset as BkDigitsDataset
-from bkdigits.jobs import TrainingJob, TrainingJobStatus, TrainingJobMetric
-from bkdigits.loaders import DataLoader as BkDigitsDataLoader
-from bkdigits.models import Model
-from bkdigits.metrics import UpdatingMetric
+from bksyn.datasets import Dataset as BkDigitsDataset
+from bksyn.jobs import TrainingJob, TrainingJobStatus, TrainingJobMetric
+from bksyn.loaders import DataLoader as BkDigitsDataLoader
+from bksyn.models import Model
+from bksyn.metrics import UpdatingMetric
 
 
 hvd.init()
@@ -127,7 +127,7 @@ def main(job):
     try:
         # Import data loader
         train_dataset = _loader.get_dataset(_dataset.path)
-        val_dataset = _val_loader.get_dataset(_val_dataset.path)
+        val_dataset = _val_loader.get_dataset(_val_dataset.path, val=True)
     except (NameError, AttributeError):
         log_update_status(job, state='ERROR', message="Invalid data loader")
         exit(-1)
