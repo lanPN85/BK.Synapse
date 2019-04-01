@@ -9,7 +9,3 @@ def unzip(zip_path, target_dir=None):
     zf = zipfile.ZipFile(zip_path, mode='r')
     zf.extractall(target_dir)
     zf.close()
-
-
-def generate_hostfile(nodes, path):
-    

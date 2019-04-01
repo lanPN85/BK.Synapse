@@ -9,7 +9,9 @@ from subprocess import Popen
 
 from apis import utils
 from apis.logs import err_logged
-from bksyn.jobs.model import TrainingJobConfig, TrainingJobConfigSchema, TrainingJob, TrainingJobMetadata, TrainingJobMetadataSchema
+from bksyn.jobs.model import TrainingJobConfig, TrainingJobConfigSchema,\
+    TrainingJob, TrainingJobMetadata, TrainingJobMetadataSchema
+from bksyn.nodes import Node, NodeDbClient
 
 
 class SubmitTrainingJob(Resource):
@@ -72,15 +74,24 @@ class StartTrainingJob(Resource):
         job.unlock()
 
         # Spawn horovod subprocess
+        db_client = NodeDbClient.from_env()
         host_list = ['localhost:1']
-        for node in job.config.nodes:
-            # TODO resolve node adressess
-            pass
+        for node_id in job.config.nodes:
+            node = db_client.get_node_by_id(node_id)
+            if node is None:
+                continue
+            if not node.is_active:
+                continue
+
+            num_procs = 1
+            if node['info']['nodeType'] == 'gpu':
+                num_procs = len(node['info']['gpu'])
+            host_list.append('%s:%d' % (node.info['address'], num_procs))
+
         host_str = ','.join(host_list)
         workers = 1
         worker_exc = os.path.join(
-            current_app.config['BACKEND_WORKER_DIRS'][job.config.backend],
-            'train.py')
+            current_app.config['BACKEND_WORKER_DIRS'][job.config.backend], 'train.py')
         
         cmd = [
             'mpirun --allow-run-as-root', 
@@ -90,7 +101,6 @@ class StartTrainingJob(Resource):
         cmd = ' '.join(cmd)
         logger.debug(cmd)
         proc = Popen(cmd, shell=True)
-        job.meta['pid'] = proc.pid
         job.save()
 
         return {

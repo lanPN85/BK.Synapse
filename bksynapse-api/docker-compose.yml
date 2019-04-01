@@ -3,7 +3,7 @@ version: "3.5"
 services:
   app-main:
     build: .
-    image: bksynapse/system:$VERSION
+    image: bksynapse/apis:$VERSION
     environment:
       - BKSYN_DATA_ROOT=/data
       - BKSYN_NODEDB_HOST=10.198.54.231
