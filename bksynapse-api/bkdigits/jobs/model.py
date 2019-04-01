@@ -239,6 +239,9 @@ class TrainingJob:
             status = TrainingJobStatus('CREATED')
             self.update_status(status)
 
+    def delete(self):
+        shutil.rmtree(self.path)
+
     @classmethod
     def load(cls, job_id):
         job = cls(job_id)

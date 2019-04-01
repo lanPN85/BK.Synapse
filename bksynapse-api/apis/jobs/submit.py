@@ -36,6 +36,25 @@ class SubmitTrainingJob(Resource):
         }
 
 
+class DeleteTrainingJob(Resource):
+    @err_logged
+    def post(self):
+        logger = logging.getLogger('app')
+        payload = flask.request.get_json()
+        job_id = payload['job']['id']
+
+        job = TrainingJob.load(job_id)
+        if job is None:
+            return {
+                'msg': 'Invalid job ID'
+            }, 400
+
+        job.delete()
+        return {
+            'msg': 'Success'
+        }
+
+
 class StartTrainingJob(Resource):
     @err_logged
     def post(self):

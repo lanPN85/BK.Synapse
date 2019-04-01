@@ -11,7 +11,7 @@ from flask_cors import CORS
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
-from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob, ListJobs, ListOptimizers, GetJobStatus
+from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob, ListJobs, ListOptimizers, GetJobStatus, DeleteTrainingJob
 from apis.models import SubmitModel, UploadModelSrc, UploadModelWeights, ListModels, ModelExists
 from apis.datasets import SubmitDataset, UploadDatasetFiles, ListDatasets, DatasetExists
 from apis.loaders import SubmitLoader, UploadLoaderSrc, LoaderExists, ListLoaders
@@ -35,6 +35,7 @@ api = Api(app)
 api.add_resource(SubmitTrainingJob, '/jobs/submit/training')
 api.add_resource(StartTrainingJob, '/jobs/start/training')
 api.add_resource(StopTrainingJob, '/jobs/stop/training')
+api.add_resource(DeleteTrainingJob, '/jobs/delete/training')
 api.add_resource(ListJobs, '/jobs/list')
 api.add_resource(GetJobStatus, '/jobs/status')
 api.add_resource(ListOptimizers, '/optimizers/list')

@@ -70,14 +70,17 @@
         <span style="overflow-x: hidden"
          class="small-text">{{ 'Created at ' + job.meta.createdAt }}</span>
         <v-spacer></v-spacer>
+        <v-btn icon flat color="error" @click="removeDialog.show = true">
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
+        <v-btn flat color="info" @click="showDetails = !showDetails">
+          {{ showDetails ? 'Hide details' : 'Show details' }}
+        </v-btn>
         <v-btn :color="runBtn.btnColor" flat
           @click="runBtn.btnCallback"
           :loading="loading.startStop">
           <v-icon style="margin-right: 5px">{{ runBtn.btnIcon }}</v-icon>
           {{ runBtn.btnText }}
-        </v-btn>
-        <v-btn flat color="info" @click="showDetails = !showDetails">
-          {{ showDetails ? 'Hide details' : 'Show details' }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -94,11 +97,32 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn flat @click="restartJob">
+            Yes 
+          </v-btn>
           <v-btn flat @click="restartDialog.show = false">
             No
           </v-btn>
-          <v-btn flat @click="restartJob">
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="removeDialog.show"
+      width="400">
+      <v-card>
+        <v-card-title class="headline">
+          Delete job
+        </v-card-title>
+        <v-card-text>
+          Are you sure you wish to delete this job ?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn flat @click="removeJob">
             Yes 
+          </v-btn>
+          <v-btn flat @click="removeDialog.show = false">
+            No
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -114,7 +138,8 @@ import { setTimeout, clearTimeout } from 'timers';
 export default {
   name: 'JobsListItem',
   props: {
-    job: Object
+    job: Object,
+    onRemoved: Function
   },
   data() {
     return {
@@ -126,6 +151,9 @@ export default {
         startStop: false
       },
       restartDialog: {
+        show: false
+      },
+      removeDialog: {
         show: false
       }
     }
@@ -208,6 +236,10 @@ export default {
     }
   },
   methods: {
+    removeJob() {
+      this.removeDialog.show = false
+      if (this.onRemoved) this.onRemoved(this.job)
+    },
     formatMetric(metric) {
       var parts = metric.name.split('_')
       var fname = ''
