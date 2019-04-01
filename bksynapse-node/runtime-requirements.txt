@@ -1,0 +1,6 @@
+Pillow
+scikit-learn
+opencv-python
+opencv-contrib-python
+pandas
+python-dateutil

@@ -13,11 +13,6 @@ BACKEND_WORKER_DIRS = {
     'pytorch': './bin/pytorch'
 }
 
-JWT_TOKEN_LOCATION = ['headers']
-JWT_SECRET_KEY = os.environ.get('APP_JWT_KEY', None)
-JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=6)
-JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
-
 LOGCONFIG = {
     'version': 1,
     'disable_existing_loggers': False,

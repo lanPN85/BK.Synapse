@@ -6,7 +6,8 @@ services:
     image: bksynapse/system:$VERSION
     environment:
       - BKSYN_DATA_ROOT=/data
-      - APP_JWT_KEY=dsfkjoj3nr034n1  # Change these in prod
+      - BKSYN_NODEDB_HOST=10.198.54.231
+      - BKSYN_NODEDB_PORT=17017
     volumes:
       - type: bind
         target: /app/logs
@@ -16,6 +17,6 @@ services:
         source: ./configs
       - type: bind
         target: /data
-        source: /mnt/bksynapse
+        source: /home/common/bksynapse
     network_mode: host
   
