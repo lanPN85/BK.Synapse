@@ -2,6 +2,7 @@ import os
 import psutil
 import GPUtil
 import pymongo
+import dateutil.parser
 
 from datetime import datetime, timedelta
 from marshmallow import Schema, post_load, fields
@@ -90,7 +91,7 @@ class Node:
         
         if lastUpdate is None:
             return False
-        lastUpdate = datetime.strptime(lastUpdate, "%Y-%m-%dT%H:%M:%S")
+        lastUpdate = dateutil.parser.parse(lastUpdate)
 
         delta = datetime.now() - lastUpdate
         return delta < self.MAX_ALIVE_TIMEOUT
