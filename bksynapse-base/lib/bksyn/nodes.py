@@ -131,7 +131,7 @@ class Node:
             }
         }
 
-        if info['nodeType'] == 'gpu':
+        if self.info['nodeType'] == 'gpu':
             gpus = GPUtil.getGPUs()
             status['gpu'] = [{
                 'usedMb': gpu.memoryUsed,
