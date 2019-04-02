@@ -8,6 +8,9 @@ services:
       - type: bind
         source: /home/common/bksynapse
         target: /data
+      - type: bind
+        source: ./logs
+        target: /app/logs
     environment:
       - BKSYN_NODEDB_HOST=10.198.54.240
       - BKSYN_NODEDB_PORT=17017
