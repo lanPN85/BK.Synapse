@@ -76,6 +76,7 @@ class StartTrainingJob(Resource):
         # Spawn horovod subprocess
         db_client = NodeDbClient.from_env()
         host_list = ['localhost:1']
+        remote_workers = 0
         for node_conf in job.config.nodes:
             node_id = node_conf['id']
             node = db_client.get_node_by_id(node_id)
@@ -87,10 +88,11 @@ class StartTrainingJob(Resource):
             num_procs = 1
             if node.info['nodeType'] == 'gpu':
                 num_procs = len(node.info['gpu'])
+            remote_workers += num_procs
             host_list.append('%s:%d' % (node.info['address'], num_procs))
 
         host_str = ','.join(host_list)
-        workers = 1
+        workers = 1 + remote_workers
         worker_exc = os.path.join(
             current_app.config['BACKEND_WORKER_DIRS'][job.config.backend], 'train.py')
         
