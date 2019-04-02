@@ -5,7 +5,6 @@ import time
 import logzero
 import traceback
 import logging
-import atexit
 
 from pprint import pformat
 from logzero import logger
@@ -19,16 +18,10 @@ def parse_arguments():
     parser = ArgumentParser()
 
     parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('-o', '--override', action='store_true')
     parser.add_argument('--id', default=os.environ['BKSYN_NODE_ADDRESS'])
 
     return parser.parse_args()
-
-
-def cleanup(db_client):
-    try:
-        db_client.remove_node(node)
-    except:
-        pass
 
 
 if __name__ == "__main__":
@@ -40,12 +33,13 @@ if __name__ == "__main__":
         logzero.loglevel(logging.INFO)
 
     db_client = NodeDbClient.from_env()
-
+    
     # Register node
     node = Node.from_env(args.id)
+    if args.override:
+        db_client.remove_node(node)
     node.query_status()
     db_client.insert_node(node)
-    atexit.register(cleanup, db_client)
 
     while True:
         try:
