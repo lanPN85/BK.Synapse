@@ -5,6 +5,7 @@ import time
 import logzero
 import traceback
 import logging
+import atexit
 
 from pprint import pformat
 from logzero import logger
@@ -23,6 +24,13 @@ def parse_arguments():
     return parser.parse_args()
 
 
+def cleanup(db_client):
+    try:
+        db_client.remove_node(node)
+    except:
+        pass
+
+
 if __name__ == "__main__":
     args = parse_arguments()
     logzero.logfile('logs/node-%s.log' % args.id, mode='a')
@@ -32,10 +40,12 @@ if __name__ == "__main__":
         logzero.loglevel(logging.INFO)
 
     db_client = NodeDbClient.from_env()
+
     # Register node
     node = Node.from_env(args.id)
     node.query_status()
     db_client.insert_node(node)
+    atexit.register(cleanup, db_client)
 
     while True:
         try:
@@ -47,5 +57,4 @@ if __name__ == "__main__":
             break
         except Exception as e:
             logger.error(traceback.format_exc())
-        finally:
-            db_client.remove_node(node)
+            break
