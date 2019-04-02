@@ -307,5 +307,7 @@ if __name__ == "__main__":
     job = TrainingJob.load(args.job_id)
     try:
         main(job)
+    except SystemExit:
+        log_update_status(job, state='INTERRUPT')
     except:
         log_update_status(job, state='ERROR', message=traceback.format_exc())

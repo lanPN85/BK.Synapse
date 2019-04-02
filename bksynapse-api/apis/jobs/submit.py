@@ -76,7 +76,8 @@ class StartTrainingJob(Resource):
         # Spawn horovod subprocess
         db_client = NodeDbClient.from_env()
         host_list = ['localhost:1']
-        for node_id in job.config.nodes:
+        for node_conf in job.config.nodes:
+            node_id = node_conf.id
             node = db_client.get_node_by_id(node_id)
             if node is None:
                 continue
