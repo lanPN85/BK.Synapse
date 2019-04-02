@@ -13,7 +13,7 @@ class NodeDbClient(MongoClient):
     def from_env(cls, **kwargs):
         env = os.environ
         return cls(env['BKSYN_NODEDB_HOST'], 
-            env['BKSYN_NODEDB_PORT'], **kwargs)
+            int(env['BKSYN_NODEDB_PORT']), **kwargs)
 
     @property
     def db(self):
