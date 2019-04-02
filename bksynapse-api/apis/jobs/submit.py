@@ -85,8 +85,8 @@ class StartTrainingJob(Resource):
                 continue
 
             num_procs = 1
-            if node['info']['nodeType'] == 'gpu':
-                num_procs = len(node['info']['gpu'])
+            if node.info['nodeType'] == 'gpu':
+                num_procs = len(node.info['gpu'])
             host_list.append('%s:%d' % (node.info['address'], num_procs))
 
         host_str = ','.join(host_list)
