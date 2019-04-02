@@ -6,6 +6,7 @@ COPY requirements.txt /app/
 RUN pip3 install -r requirements.txt
 COPY runtime-requirements.txt /app/
 RUN pip3 install -r runtime-requirements.txt
+ENV HOROVOD_START_TIMEOUT=20
 
 COPY . /app
 EXPOSE 5000

@@ -97,7 +97,7 @@ class StartTrainingJob(Resource):
             current_app.config['BACKEND_WORKER_DIRS'][job.config.backend], 'train.py')
         
         cmd = [
-            'mpirun --allow-run-as-root', 
+            'horovodrun -p 17992', 
             '-np', str(workers), '-H', host_str,
             worker_exc, '--job-id', job.id
         ]
