@@ -85,7 +85,7 @@ class Node:
         self.status = status
 
     @property
-    def is_active(self):
+    def isActive(self):
         lastUpdate = self.status.get('lastUpdated')
         
         if lastUpdate is None:
@@ -94,9 +94,6 @@ class Node:
 
         delta = datetime.now() - lastUpdate
         return delta < self.MAX_ALIVE_TIMEOUT
-
-    @property
-    def 
 
     @classmethod
     def from_env(cls, id):
@@ -153,4 +150,7 @@ class NodeSchema(Schema):
     def make_obj(self, data):
         return Node(**data)
 
+
+class NodeExtSchema(NodeSchema):
+    isActive = fields.Boolean()
 
