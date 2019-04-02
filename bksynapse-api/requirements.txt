@@ -5,3 +5,4 @@ Flask-LogConfig==0.4.2
 gunicorn[gevent]==19.9.0
 requests==2.21.0
 tensorboardX==1.6
+logzero
