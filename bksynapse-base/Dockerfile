@@ -42,11 +42,13 @@ ENV HOROVOD_WITH_TENSORFLOW=1\
     HOROVOD_WITH_PYTORCH=1
 RUN pip3 install --no-cache-dir horovod && ldconfig
 
-ENV SSHDIR /root/.ssh/
+ENV SSHDIR /root/.ssh
 RUN mkdir -p ${SSHDIR}
-COPY mpi/ssh/* ${SSHDIR}
+COPY mpi/ssh/* ${SSHDIR}/
 COPY mpi/ssh/id_rsa.pub ${SSHDIR}/authorized_keys
 RUN eval `ssh-agent -s` && ssh-add ${SSHDIR}/id_rsa
+RUN mkdir -p /root/.openmpi
+COPY mpi/default-mca-params.conf /root/.openmpi/default-mca-params.conf
 ENV OMPI_ALLOW_RUN_AS_ROOT=1
 ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
