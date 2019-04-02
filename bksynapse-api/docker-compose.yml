@@ -6,7 +6,7 @@ services:
     image: bksynapse/apis:$VERSION
     environment:
       - BKSYN_DATA_ROOT=/data
-      - BKSYN_NODEDB_HOST=10.198.54.231
+      - BKSYN_NODEDB_HOST=localhost
       - BKSYN_NODEDB_PORT=17017
     volumes:
       - type: bind
