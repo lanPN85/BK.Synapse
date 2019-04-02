@@ -44,7 +44,9 @@ class NodeDbClient(MongoClient):
         return self.collection.update_one({
             'id': node.id
         }, {
-            'status': node.status
+            '$set': {
+                'status': node.status
+            }
         })
 
     def get_all_nodes(self):
