@@ -29,7 +29,6 @@ logger = logging.getLogger('app')
 # Modifiers
 CORS(app)
 LogConfig(app)
-JWTManager(app)
 
 # Add flask_restful endpoints
 api = Api(app)
