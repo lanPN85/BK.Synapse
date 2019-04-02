@@ -9,12 +9,12 @@ from marshmallow import Schema, fields, post_load
 
 
 class NodeConfig:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, id):
+        self.id = id
 
 
 class NodeConfigSchema(Schema):
-    name = fields.Str()
+    id = fields.Str()
 
 
 class TrainingJobConfig:
