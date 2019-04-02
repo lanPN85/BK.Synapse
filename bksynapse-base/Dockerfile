@@ -45,8 +45,8 @@ RUN pip3 install --no-cache-dir horovod && ldconfig
 ENV SSHDIR /root/.ssh/
 RUN mkdir -p ${SSHDIR}
 COPY mpi/ssh/* ${SSHDIR}
-COPY mpi/ssh/id_rsa.mpi.pub ${SSHDIR}/authorized_keys
-RUN eval `ssh-agent -s` && ssh-add ${SSHDIR}/id_rsa.mpi
+COPY mpi/ssh/id_rsa.pub ${SSHDIR}/authorized_keys
+RUN eval `ssh-agent -s` && ssh-add ${SSHDIR}/id_rsa
 ENV OMPI_ALLOW_RUN_AS_ROOT=1
 ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
