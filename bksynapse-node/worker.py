@@ -18,7 +18,7 @@ def parse_arguments():
     parser = ArgumentParser()
 
     parser.add_argument('-d', '--debug', action='store_true')
-    parser.add_argument(dest='id', required=True)
+    parser.add_argument(dest='id', default=os.environ['BKSYN_NODE_ADDRESS'])
 
     return parser.parse_args()
 
