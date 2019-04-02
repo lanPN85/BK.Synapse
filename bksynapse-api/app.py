@@ -15,6 +15,8 @@ from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob, List
 from apis.models import SubmitModel, UploadModelSrc, UploadModelWeights, ListModels, ModelExists
 from apis.datasets import SubmitDataset, UploadDatasetFiles, ListDatasets, DatasetExists
 from apis.loaders import SubmitLoader, UploadLoaderSrc, LoaderExists, ListLoaders
+from apis.nodes import GetNodeList, GetNodeStatus
+
 
 app = Flask(__name__)
 
@@ -55,6 +57,9 @@ api.add_resource(SubmitLoader, '/loaders/submit')
 api.add_resource(UploadLoaderSrc, '/loaders/upload/<loader_name>/src')
 api.add_resource(ListLoaders, '/loaders/list')
 api.add_resource(LoaderExists, '/loaders/exists')
+
+api.add_resource(GetNodeList, '/nodes/list')
+api.add_resource(GetNodeStatus, '/nodes/status')
 
 
 def exit():

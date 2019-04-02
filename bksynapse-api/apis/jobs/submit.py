@@ -80,7 +80,7 @@ class StartTrainingJob(Resource):
             node = db_client.get_node_by_id(node_id)
             if node is None:
                 continue
-            if not node.is_active:
+            if not node.isActive:
                 continue
 
             num_procs = 1
