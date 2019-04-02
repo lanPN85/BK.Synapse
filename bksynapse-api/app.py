@@ -9,7 +9,6 @@ from flask import Flask
 from flask_logconfig import LogConfig
 from flask_cors import CORS
 from flask_restful import Api
-from flask_jwt_extended import JWTManager
 
 from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob, ListJobs, ListOptimizers, GetJobStatus, DeleteTrainingJob
 from apis.models import SubmitModel, UploadModelSrc, UploadModelWeights, ListModels, ModelExists
