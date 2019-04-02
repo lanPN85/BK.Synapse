@@ -5,7 +5,7 @@ volumes:
 
 services:
   nodes-db:
-    image: mongo:latest
+    image: mongo:3.6
     ports:
       - 17017:27017
     volumes:
