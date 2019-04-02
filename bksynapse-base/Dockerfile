@@ -42,7 +42,7 @@ ENV HOROVOD_WITH_TENSORFLOW=1\
     HOROVOD_WITH_PYTORCH=1
 RUN pip3 install --no-cache-dir horovod && ldconfig
 
-ENV SSHDIR /etc/ssh/
+ENV SSHDIR /root/.ssh/
 RUN mkdir -p ${SSHDIR}
 COPY mpi/ssh/* ${SSHDIR}
 COPY mpi/ssh/id_rsa.mpi.pub ${SSHDIR}/authorized_keys
