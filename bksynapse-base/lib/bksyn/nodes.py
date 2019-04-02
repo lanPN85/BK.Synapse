@@ -15,33 +15,31 @@ class NodeDbClient(MongoClient):
         return cls(env['BKSYN_NODEDB_HOST'], 
             int(env['BKSYN_NODEDB_PORT']), **kwargs)
 
-    @property
     def db(self):
-        return self.bksyn
+        return self['bksyn']
 
-    @property
     def collection(self):
-        return self.db.nodes
+        return self.db()['nodes']
 
     def insert_node(self, node, exist_ok=False):
         d = NodeSchema().dump(node).data
 
         if not exist_ok:
-            prev = self.collection.find_one({
+            prev = self.collection().find_one({
                 'id': node.id
             })
             if prev is not None:
                 raise ValueError('Node with id `%s` already exists.' % node.id)
         
-        return self.collection.insert_one(d)
+        return self.collection().insert_one(d)
 
     def remove_node(self, node):
-        return self.collection.delete_one({
+        return self.collection().delete_one({
             'id': node.id
         })
 
     def update_node_status(self, node):
-        return self.collection.update_one({
+        return self.collection().update_one({
             'id': node.id
         }, {
             '$set': {
@@ -50,7 +48,7 @@ class NodeDbClient(MongoClient):
         })
 
     def get_all_nodes(self):
-        cursor = self.collection.find(sort=[
+        cursor = self.collection().find(sort=[
             ('id', pymongo.ASCENDING)
         ])
 
@@ -64,7 +62,7 @@ class NodeDbClient(MongoClient):
         return nodes
 
     def get_node_by_id(self, id):
-        node = self.collection.find_one({
+        node = self.collection().find_one({
             'id': id
         })
 
