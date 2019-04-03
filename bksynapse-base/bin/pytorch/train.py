@@ -5,7 +5,6 @@ sys.path.extend(['.'])
 import os
 import signal
 import logging
-import requests
 import logzero
 import torch
 import shutil

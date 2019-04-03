@@ -50,10 +50,23 @@ ENV HOROVOD_WITH_TENSORFLOW=1\
 RUN ldconfig /usr/local/cuda-9.0/targets/x86_64-linux/lib/stubs &&\
     pip3 install --no-cache-dir horovod && ldconfig
 
-ENV SSHDIR ${HOME}/.ssh/
+ENV SSHDIR /root/.ssh
 RUN mkdir -p ${SSHDIR}
-COPY mpi/ssh/id_rsa.mpi ${SSHDIR}/id_rsa
-COPY mpi/ssh/id_rsa.mpi.pub ${SSHDIR}/id_rsa.pub
-COPY mpi/ssh/id_rsa.mpi.pub ${SSHDIR}/authorized_keys
+COPY mpi/ssh/* ${SSHDIR}/
+COPY mpi/ssh/id_rsa.pub ${SSHDIR}/authorized_keys
+RUN eval `ssh-agent -s` && ssh-add ${SSHDIR}/id_rsa
+RUN mkdir -p /root/.openmpi
+COPY mpi/default-mca-params.conf /root/.openmpi/default-mca-params.conf
+ENV OMPI_ALLOW_RUN_AS_ROOT=1
+ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
+# Build shared lib
+RUN mkdir /libs
+COPY ./lib/ /libs/bksyn
+RUN pip3 install /libs/bksyn
+COPY ./runtime-requirements.txt /libs
+RUN pip3 install -r /libs/runtime-requirements.txt
+RUN mkdir -p /usr/bin/bksynapse
+COPY ./bin/* /usr/bin/bksynapse/
 
 EXPOSE 17992
