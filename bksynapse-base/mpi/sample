@@ -9,3 +9,5 @@ mpirun --allow-run-as-root -bind-to none -map-by slot\
  -mca btl openib,tcp,self
 
 horovodrun --disable-cache --verbose -p 17992 -np 2 -H 127.0.0.1:1,192.168.1.8:1 /usr/bin/bksynapse/pytorch/train.py --job-id d20db7d2-2f22-4f86-bbc7-8e93c5239132
+
+mpirun --allow-run-as-root -bind-to none -map-by slot    -mca plm_rsh_args "-p 17992" -mca pml ob1 -mca btl ^tcp    -mca btl_tcp_if_include 192.168.1.0/24    --mca orte_base_help_aggregate 0    -v -np 2 -H 192.168.1.2:1,192.168.1.8:1 python3 -c "import horovod.torch as hvd; hvd.init()"
