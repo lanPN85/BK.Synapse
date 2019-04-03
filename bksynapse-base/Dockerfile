@@ -28,9 +28,9 @@ RUN apt update && apt install -y --no-install-recommends libibverbs*\
     ibverbs-utils librdmacm* infiniband-diags libmlx4* libmlx5* libnuma*
 RUN mkdir /tmp/openmpi && \
     cd /tmp/openmpi && \
-    wget https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-3.1.2.tar.gz && \
-    tar zxf openmpi-3.1.2.tar.gz && \
-    cd openmpi-3.1.2 && \
+    wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.0.tar.gz && \
+    tar zxf openmpi-4.0.0.tar.gz && \
+    cd openmpi-4.0.0 && \
     ./configure --enable-orterun-prefix-by-default && \
     make -j $(nproc) all && \
     make install && \
@@ -42,7 +42,7 @@ RUN pip3 install torch==${PYTORCH_VERSION} torchvision\
     ${TENSORFLOW_VARIANT}==${TENSORFLOW_VERSION} numpy
 ENV HOROVOD_WITH_TENSORFLOW=1\
     HOROVOD_WITH_PYTORCH=1
-RUN pip3 install --no-cache-dir horovod && ldconfig
+RUN pip3 install --no-cache-dir git+https://github.com/horovod/horovod.git@v0.16.1 && ldconfig
 
 ENV SSHDIR /root/.ssh
 RUN mkdir -p ${SSHDIR}
