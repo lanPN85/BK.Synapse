@@ -10,7 +10,7 @@ PROPAGATE_EXCEPTIONS = True
 MAX_CONTENT_LENGTH = 1024 * 1024 * 1024
 
 BACKEND_WORKER_DIRS = {
-    'pytorch': './bin/pytorch'
+    'pytorch': '/usr/bin/bksynapse/pytorch'
 }
 
 LOGCONFIG = {

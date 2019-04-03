@@ -4,10 +4,8 @@ FROM bksynapse/base:latest
 WORKDIR /app
 COPY requirements.txt /app/
 RUN pip3 install -r requirements.txt
-COPY runtime-requirements.txt /app/
-RUN pip3 install -r runtime-requirements.txt
-ENV HOROVOD_START_TIMEOUT=20
 
 COPY . /app
+ENV HOROVOD_START_TIMEOUT=20
 EXPOSE 5000
 CMD gunicorn --config configs/gunicorn.py app:app
