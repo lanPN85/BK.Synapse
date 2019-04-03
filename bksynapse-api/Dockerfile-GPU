@@ -4,8 +4,6 @@ FROM bksynapse/base-gpu:latest
 WORKDIR /app
 COPY requirements.txt /app/
 RUN pip3 install -r requirements.txt
-COPY runtime-requirements.txt /app/
-RUN pip3 install -r runtime-requirements.txt
 
 COPY . /app
 EXPOSE 5000
