@@ -245,14 +245,11 @@ class TrainingJob:
     @classmethod
     def load(cls, job_id):
         job = cls(job_id)
-        try:
-            with open(job.config_path, 'rt') as f:
-                job.config = TrainingJobConfigSchema().load(json.load(f)).data
-            with open(job.meta_path, 'rt') as f:
-                job.meta = TrainingJobMetadataSchema().load(json.load(f)).data
-            return job
-        except:
-            return None
+        with open(job.config_path, 'rt') as f:
+            job.config = TrainingJobConfigSchema().load(json.load(f)).data
+        with open(job.meta_path, 'rt') as f:
+            job.meta = TrainingJobMetadataSchema().load(json.load(f)).data
+        return job
 
 
 class TrainingJobSchema(Schema):
