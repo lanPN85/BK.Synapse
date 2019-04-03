@@ -6,3 +6,4 @@ gputil==1.4.0
 python-dateutil==2.8.0
 tensorboardX==1.6
 logzero==1.5.0
+mpi4py

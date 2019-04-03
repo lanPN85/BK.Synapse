@@ -1,7 +1,10 @@
 mpirun --allow-run-as-root -bind-to none -map-by slot\
-    -mca pml ob1 -mca btl tcp,self --mca plm_rsh_args "-p 17992" -mca btl_tcp_if_exclude lo,docker0\
-    -v -np 2 -H localhost:1,192.168.1.8:1 /usr/bin/bksynapse/pytorch/train.py --job-id d20db7d2-2f22-4f86-bbc7-8e93c5239132 2>logs/mpierrors.log
+    -mca plm_rsh_args "-p 17992" -mca pml ob1 -mca btl ^tcp\
+    -mca btl_tcp_if_include 192.168.1.0/24\
+    --mca orte_base_help_aggregate 0\
+    -v -np 2 -H 192.168.1.2:1,192.168.1.8:1 /usr/bin/bksynapse/pytorch/train.py --job-id d20db7d2-2f22-4f86-bbc7-8e93c5239132
 
+-mca pml ob1 -mca btl tcp,self 
 -mca btl_tcp_if_include enp0s31f6
  -mca btl openib,tcp,self
 
