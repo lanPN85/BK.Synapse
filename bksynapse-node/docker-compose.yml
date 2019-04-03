@@ -12,9 +12,9 @@ services:
         source: ./logs
         target: /app/logs
     environment:
-      - BKSYN_NODEDB_HOST=10.198.54.240
+      - BKSYN_NODEDB_HOST=192.168.1.2
       - BKSYN_NODEDB_PORT=17017
       - BKSYN_DATA_ROOT=/data
-      - BKSYN_NODE_ADDRESS=10.198.54.231
+      - BKSYN_NODE_ADDRESS=192.168.1.2
       - BKSYN_NODE_TYPE=cpu
     network_mode: host
