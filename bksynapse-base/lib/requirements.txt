@@ -4,3 +4,5 @@ pymongo==3.7.2
 psutil==5.6.1
 gputil==1.4.0
 python-dateutil==2.8.0
+tensorboardX==1.6
+logzero==1.5.0

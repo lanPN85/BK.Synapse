@@ -22,7 +22,6 @@ from argparse import ArgumentParser
 from logzero import logger
 from collections import defaultdict
 
-from apis import utils
 from bksyn.datasets import Dataset as BkDigitsDataset
 from bksyn.jobs import TrainingJob, TrainingJobStatus, TrainingJobMetric
 from bksyn.loaders import DataLoader as BkDigitsDataLoader
