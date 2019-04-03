@@ -107,8 +107,9 @@ OPTIMIZER_MAP = {
 
 def main(job):
     logzero.logfile(os.path.join(job.log_path, 'train.node-%d.log' % hvd.rank()),mode='w')
-    if os.path.exists(job.history_path):
-        os.remove(job.history_path)
+    if hvd.rank() == 0:
+        if os.path.exists(job.history_path):
+            os.remove(job.history_path)
     log_update_status(job, state='SETUP')
 
     # Setup objects
@@ -170,8 +171,9 @@ def main(job):
 
     # Setup tensorboard
     tb_path = os.path.join(job.output_path, 'tensorboard')
-    if os.path.exists(tb_path):
-        shutil.rmtree(tb_path)
+    if hvd.rank() == 0:
+        if os.path.exists(tb_path):
+            shutil.rmtree(tb_path)
     log_writer = tensorboardX.SummaryWriter(tb_path) if hvd.rank() == 0 else None
     # Visualize graph with first batch
     first_batch, _ = next(iter(val_loader))
@@ -287,7 +289,7 @@ def main(job):
         save_tensorboard_metrics(log_writer, avg_metrics, ep+1, prefix='val/')
 
         # Save snapshot
-        if ep % job.config.snapshotInterval == 0:
+        if ep % job.config.snapshotInterval == 0 and hvd.rank() == 0:
             snap_path = os.path.join(job.snapshot_path, 
                 'epoch-%d.pth' % (ep+1))
             save_snapshot(torch_model, snap_path)
