@@ -6,7 +6,7 @@
         <v-icon>mdi-menu</v-icon>
       </v-toolbar-side-icon>
       <v-toolbar-title>
-				<a href="/" class="title-text">BKDIGITS</a>
+				<a href="/" class="title-text">BK.SYNAPSE</a>
 			</v-toolbar-title>
     </v-toolbar>
 

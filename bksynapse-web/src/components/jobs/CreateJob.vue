@@ -83,7 +83,7 @@
               <v-select label="Nodes"
                 multiple
                 v-model="jobConfigs.nodes"
-                :items="configChoices.nodes"
+                :items="nodeIdList"
                 color="jobs" box></v-select>
             </v-flex>
           </v-layout>
@@ -170,6 +170,13 @@ export default {
         && configs.valDataset && configs.optimizer 
         && configs.model && configs.epochs > 0
         && configs.learningRate > 0
+    },
+    nodeIdList() {
+      var idList = []
+      for (var i=0; i<this.configChoices.nodes.length; i++) {
+        idList.push(this.configChoices.nodes[i].id)
+      }
+      return idList
     }
   },
   methods: {
@@ -178,7 +185,15 @@ export default {
       this.job = null
       var component = this
       this.loading = true
-      return axios.post(url, this.jobConfigs, {
+
+      var configs = Object.assign({}, this.jobConfigs)
+      for (var i=0; i<configs.nodes.length; i++) {
+        configs.nodes[i] = {
+          id: configs.nodes[i]
+        }
+      }
+
+      return axios.post(url, configs, {
         headers: {
           'Access-Control-Allow-Origin': '*'
         }
@@ -218,7 +233,8 @@ export default {
     fetchConfigChoices() {
       Promise.all([
         this.fetchModelChoices(), this.fetchDatasetChoices(),
-        this.fetchLoaderChoices(), this.fetchOptimizerChoices()
+        this.fetchLoaderChoices(), this.fetchOptimizerChoices(),
+        this.fetchNodeChoices()
       ]).catch(error => {
         console.error(error)
       })
@@ -245,6 +261,19 @@ export default {
       }).then(response => {
         var datasets = response.data.datasets
         component.configChoices.dataset = datasets
+      })
+    },
+    fetchNodeChoices() {
+      var url = process.env.VUE_APP_APIURL + 'nodes/list'
+      var component = this
+      return axios.get(url, {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      }).then(response => {
+        var nodes = response.data.nodes
+        console.log(nodes)
+        component.configChoices.nodes = nodes
       })
     },
     fetchLoaderChoices() {

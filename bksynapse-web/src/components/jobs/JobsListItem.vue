@@ -70,7 +70,7 @@
         <span style="overflow-x: hidden"
          class="small-text">{{ 'Created at ' + job.meta.createdAt }}</span>
         <v-spacer></v-spacer>
-        <v-btn icon flat color="error" @click="removeDialog.show = true">
+        <v-btn icon flat color="grey" @click="removeDialog.show = true">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
         <v-btn flat color="info" @click="showDetails = !showDetails">
