@@ -1,0 +1,8 @@
+mpirun --allow-run-as-root -bind-to none -map-by slot\
+    -mca pml ob1 --mca plm_rsh_args "-p 17992" -mca btl_tcp_if_exclude lo,docker0\
+    -v -np 2 -H localhost:1,10.198.54.231:1 /usr/bin/bksynapse/pytorch/train.py --job-id 1a896c25-5d17-4623-96da-17802dfc1127 2>logs/mpierrors.log
+
+-mca btl_tcp_if_include enp0s31f6
+ -mca btl openib,tcp,self
+
+horovodrun --disable-cache --verbose -p 17992 -np 2 -H 127.0.0.1:1,10.198.54.231:1 /usr/bin/bksynapse/pytorch/train.py --job-id 1a896c25-5d17-4623-96da-17802dfc1127
