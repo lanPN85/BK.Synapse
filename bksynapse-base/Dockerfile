@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM nvidia/cuda:9.0-devel-ubuntu16.04
 
 LABEL "maintainer"="lanpn <phan.ngoclan58@gmail.com>"
 
@@ -31,7 +31,7 @@ RUN mkdir /tmp/openmpi && \
     wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.0.tar.gz && \
     tar zxf openmpi-4.0.0.tar.gz && \
     cd openmpi-4.0.0 && \
-    ./configure --enable-orterun-prefix-by-default && \
+    ./configure --enable-orterun-prefix-by-default --enable-mpirun-prefix-by-default && \
     make -j $(nproc) all && \
     make install && \
     ldconfig && \
@@ -42,7 +42,8 @@ RUN pip3 install torch==${PYTORCH_VERSION} torchvision\
     ${TENSORFLOW_VARIANT}==${TENSORFLOW_VERSION} numpy
 ENV HOROVOD_WITH_TENSORFLOW=1\
     HOROVOD_WITH_PYTORCH=1
-RUN pip3 install --no-cache-dir git+https://github.com/horovod/horovod.git@v0.16.1 && ldconfig
+RUN ldconfig /usr/local/cuda-9.0/targets/x86_64-linux/lib/stubs && \
+    pip3 install --no-cache-dir git+https://github.com/horovod/horovod.git@v0.16.1 && ldconfig
 
 ENV SSHDIR /root/.ssh
 RUN mkdir -p ${SSHDIR}
