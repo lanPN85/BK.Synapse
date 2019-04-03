@@ -24,11 +24,13 @@ RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_confi
     mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
 
 # Install Open MPI
+RUN apt update && apt install -y --no-install-recommends libibverbs*\
+    ibverbs-utils librdmacm* infiniband-diags libmlx4* libmlx5* libnuma*
 RUN mkdir /tmp/openmpi && \
     cd /tmp/openmpi && \
-    wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.0.tar.gz && \
-    tar zxf openmpi-4.0.0.tar.gz && \
-    cd openmpi-4.0.0 && \
+    wget https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-3.1.2.tar.gz && \
+    tar zxf openmpi-3.1.2.tar.gz && \
+    cd openmpi-3.1.2 && \
     ./configure --enable-orterun-prefix-by-default && \
     make -j $(nproc) all && \
     make install && \
