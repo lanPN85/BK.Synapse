@@ -8,6 +8,7 @@ services:
       - BKSYN_DATA_ROOT=/data
       - BKSYN_NODEDB_HOST=localhost
       - BKSYN_NODEDB_PORT=17017
+      - HOROVOD_START_TIMEOUT=6000
     volumes:
       - type: bind
         target: /app/logs

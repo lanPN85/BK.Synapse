@@ -10,7 +10,7 @@ from subprocess import Popen
 from apis import utils
 from apis.logs import err_logged
 from bksyn.jobs.model import TrainingJobConfig, TrainingJobConfigSchema,\
-    TrainingJob, TrainingJobMetadata, TrainingJobMetadataSchema
+    TrainingJob, TrainingJobMetadata, TrainingJobMetadataSchema, TrainingJobStatus
 from bksyn.nodes import Node, NodeDbClient
 
 
@@ -105,6 +105,7 @@ class StartTrainingJob(Resource):
         logger.debug(cmd)
         proc = Popen(cmd, shell=True)
         job.save()
+        job.update_status(TrainingJobStatus('STARTING'))
 
         return {
             'msg': 'Success'
