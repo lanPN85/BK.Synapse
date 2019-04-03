@@ -59,6 +59,6 @@ RUN pip3 install /libs/bksyn
 COPY ./runtime-requirements.txt /libs
 RUN pip3 install -r /libs/runtime-requirements.txt
 RUN mkdir -p /usr/bin/bksynapse
-COPY ./bin/* /usr/bin/bksynapse/
+COPY ./bin/pytorch /usr/bin/bksynapse/pytorch
 
 EXPOSE 17992
