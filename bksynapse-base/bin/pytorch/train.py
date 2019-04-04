@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import sys
 sys.path.extend(['.'])
@@ -252,7 +252,15 @@ def main(job):
             metrics=avg_metrics)
         for batch_idx, (data, target) in enumerate(val_loader):
             if use_cuda:
-                data, target = data.cuda(), target.cuda()
+                if isinstance(data, list) or isinstance(data, tuple):
+                    data = list(map(lambda x: x.cuda(), data))
+                else:
+                    data = data.cuda()
+                
+                if isinstance(target, list) or isinstance(target, tuple):
+                    target = list(map(lambda x: x.cuda(), target))
+                else:
+                    target = target.cuda()
             output = torch_model(data)
             metrics
             loss = torch_model.loss(output, target).item()
@@ -273,7 +281,8 @@ def main(job):
         
         # Calculate average for all metrics
         avg_metrics = []
-        for k, v in val_metrics.items():
+        kv_list = sorted(val_metrics.items(), key=lambda x: x[0])
+        for k, v in kv_list:
             avg_k = 'val_%s' % k
             avg_v = v / len(val_loader)
             avg_v = metric_average(avg_v, avg_k)
