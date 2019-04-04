@@ -9,7 +9,7 @@ from apis import utils
 from apis.logs import err_logged
 from bksyn.nodes import Node, NodeExtSchema
 
-ROOT_DIR = os.path.join(os.environ['BKSYN_DATA_ROOT'], 'jobs')
+ROOT_DIR = os.path.join(os.environ['BKSYN_DATA_ROOT'], 'nodes')
 
 
 class GetNodeList(Resource):

@@ -101,6 +101,7 @@ class StartTrainingJob(Resource):
             btl_incl = '-mca btl_tcp_if_include ' + btl_incl
 
         cmd = [
+            'HVD_TIMELINE="%s"' % (job.hvd_timeline_path),
             'mpirun --allow-run-as-root -bind-to none -map-by slot',
             '-mca plm_rsh_args "-p 17992" -mca pml ob1 -mca btl ^openib',
             btl_incl, '-x LD_LIBRARY_PATH -x PATH -x BKSYN_DATA_ROOT',

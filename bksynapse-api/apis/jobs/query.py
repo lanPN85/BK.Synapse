@@ -95,3 +95,24 @@ class ListOptimizers(Resource):
                 {'value': 'rmsprop', 'text': 'RMSProp'},
             ]
         }
+
+
+class ExportJobOutput(Resource):
+    @err_logged
+    def get(self):
+        job_id = flask.request.args['id']
+        job = TrainingJob.load(job_id)
+        if job is None:
+            return {
+                'msg': 'Invalid job ID'
+            }, 400
+
+        if not os.path.exists(job.output_path):
+            return {
+                'msg': 'No output for requested job'
+            }
+
+        zip_path = os.path.join(job.path, 'output.zip')
+        utils.zip(zip_path, job.output_path)
+
+        return flask.send_from_directory(job.path, 'output.zip')
