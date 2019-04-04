@@ -30,7 +30,7 @@ class ListDatasets(Resource):
         names = names[offset:offset + max_count]
         objs = []
         for name in names:
-            obj = Dataset(name)
+            obj = Dataset.load(name)
             d = DatasetSchema().dump(obj).data
             objs.append(d)
         

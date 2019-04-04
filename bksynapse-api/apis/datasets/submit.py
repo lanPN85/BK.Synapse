@@ -22,6 +22,9 @@ class SubmitDataset(Resource):
             }, 400
         
         ds.save()
+        ds.update_size()
+        ds.save()
+        
         return {
             'msg': 'Success'
         }, 200
@@ -47,7 +50,27 @@ class UploadDatasetFiles(Resource):
         if current_chunk + 1 == total_chunks:
             utils.unzip(save_path)
             os.remove(save_path)
+            ds.update_size()
+            ds.save()
+        
+        return {
+            'msg': 'Success'
+        }
 
+
+class DeleteDataset(Resource):
+    @err_logged
+    def post(self):
+        payload = flask.request.get_json()
+        dataset_name = payload['dataset']['name']
+        ds = Dataset.load(dataset_name)
+
+        if ds is None:
+            return {
+                'msg': 'Invalid dataset name'
+            }, 400
+        
+        shutil.rmtree(ds.path)
         return {
             'msg': 'Success'
         }

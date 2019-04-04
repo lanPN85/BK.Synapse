@@ -51,3 +51,22 @@ class UploadLoaderSrc(Resource):
         return {
             'msg': 'Success'
         }
+
+
+class DeleteLoader(Resource):
+    @err_logged
+    def post(self):
+        payload = flask.request.get_json()
+        dataset_name = payload['loader']['name']
+        ds = DataLoader.load(dataset_name)
+
+        if ds is None:
+            return {
+                'msg': 'Invalid dataset name'
+            }, 400
+        
+        shutil.rmtree(ds.path)
+        return {
+            'msg': 'Success'
+        }
+

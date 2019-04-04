@@ -12,8 +12,8 @@ from flask_restful import Api
 
 from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob, ListJobs, ListOptimizers, GetJobStatus, DeleteTrainingJob, ExportJobOutput, GetJobConfig
 from apis.models import SubmitModel, UploadModelSrc, UploadModelWeights, ListModels, ModelExists
-from apis.datasets import SubmitDataset, UploadDatasetFiles, ListDatasets, DatasetExists
-from apis.loaders import SubmitLoader, UploadLoaderSrc, LoaderExists, ListLoaders
+from apis.datasets import SubmitDataset, UploadDatasetFiles, ListDatasets, DatasetExists, DeleteDataset
+from apis.loaders import SubmitLoader, UploadLoaderSrc, LoaderExists, ListLoaders, DeleteLoader
 from apis.nodes import GetNodeList, GetNodeStatus
 
 
@@ -52,10 +52,12 @@ api.add_resource(SubmitDataset, '/datasets/submit')
 api.add_resource(UploadDatasetFiles, '/datasets/upload/<dataset_name>/files')
 api.add_resource(ListDatasets, '/datasets/list')
 api.add_resource(DatasetExists, '/datasets/exists')
+api.add_resource(DeleteDataset, '/datasets/delete')
 
 api.add_resource(SubmitLoader, '/loaders/submit')
 api.add_resource(UploadLoaderSrc, '/loaders/upload/<loader_name>/src')
 api.add_resource(ListLoaders, '/loaders/list')
+api.add_resource(DeleteLoader, '/loaders/delete')
 api.add_resource(LoaderExists, '/loaders/exists')
 
 api.add_resource(GetNodeList, '/nodes/list')
