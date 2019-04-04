@@ -94,6 +94,7 @@ class Node:
             json.dump(self.status, f, indent=2)
 
     def save(self):
+        os.makedirs(self.path, exist_ok=True)
         with open(self.status_path, 'wt') as f:
             json.dump(self.status, f, indent=2)
 
