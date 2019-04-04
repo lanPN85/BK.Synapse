@@ -7,4 +7,4 @@ RUN pip3 install -r requirements.txt
 
 COPY . /app
 EXPOSE 5000
-CMD gunicorn --config configs/gunicorn.py app:app
+CMD /usr/sbin/sshd -p 17992; gunicorn --config configs/gunicorn.py app:app
