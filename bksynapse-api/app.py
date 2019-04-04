@@ -10,7 +10,7 @@ from flask_logconfig import LogConfig
 from flask_cors import CORS
 from flask_restful import Api
 
-from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob, ListJobs, ListOptimizers, GetJobStatus, DeleteTrainingJob, ExportJobOutput
+from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob, ListJobs, ListOptimizers, GetJobStatus, DeleteTrainingJob, ExportJobOutput, GetJobConfig
 from apis.models import SubmitModel, UploadModelSrc, UploadModelWeights, ListModels, ModelExists
 from apis.datasets import SubmitDataset, UploadDatasetFiles, ListDatasets, DatasetExists
 from apis.loaders import SubmitLoader, UploadLoaderSrc, LoaderExists, ListLoaders
@@ -38,7 +38,8 @@ api.add_resource(StopTrainingJob, '/jobs/stop/training')
 api.add_resource(DeleteTrainingJob, '/jobs/delete/training')
 api.add_resource(ListJobs, '/jobs/list')
 api.add_resource(GetJobStatus, '/jobs/status')
-api.add_resource(ExportJobOutput, '/jobs/export')
+api.add_resource(GetJobConfig, '/jobs/config')
+api.add_resource(ExportJobOutput, '/jobs/export/<job_id>.zip')
 api.add_resource(ListOptimizers, '/optimizers/list')
 
 api.add_resource(SubmitModel, '/models/submit')

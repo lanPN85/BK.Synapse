@@ -8,7 +8,7 @@ from flask_restful import Resource
 
 from apis import utils
 from apis.logs import err_logged
-from bksyn.jobs import TrainingJob, TrainingJobSchema, TrainingJobStatusSchema
+from bksyn.jobs import TrainingJob, TrainingJobSchema, TrainingJobStatusSchema, TrainingJobConfigSchema
 
 
 ROOT_DIR = os.path.join(os.environ['BKSYN_DATA_ROOT'], 'jobs')
@@ -84,6 +84,21 @@ class GetJobStatus(Resource):
         }
 
 
+class GetJobConfig(Resource):
+    @err_logged
+    def get(self):
+        job_id = flask.request.args['id']
+        job = TrainingJob.load(job_id)
+        if job is None:
+            return {
+                'msg': 'Invalid job ID'
+            }, 400
+        
+        return {
+            'info': TrainingJobConfigSchema().dump(job.info).data
+        }
+
+
 class ListOptimizers(Resource):
     @err_logged
     def get(self):
@@ -99,8 +114,7 @@ class ListOptimizers(Resource):
 
 class ExportJobOutput(Resource):
     @err_logged
-    def get(self):
-        job_id = flask.request.args['id']
+    def get(self, job_id):
         job = TrainingJob.load(job_id)
         if job is None:
             return {

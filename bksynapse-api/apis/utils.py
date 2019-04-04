@@ -12,6 +12,9 @@ def unzip(zip_path, target_dir=None):
     zf.close()
 
 def zip(zip_path, source_path):
-    zip_name = zip_path.split('.')[-1]
-    source_path = os.path.abspath(source_path)
-    return shutil.make_archive(zip_name, zip, source_path)
+    zipf = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
+    for root, dirs, files in os.walk(source_path):
+        for file in files:
+            zipf.write(os.path.join(root, file))
+    zipf.close()
+
