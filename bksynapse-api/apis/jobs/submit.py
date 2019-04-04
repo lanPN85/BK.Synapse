@@ -11,7 +11,7 @@ from apis import utils
 from apis.logs import err_logged
 from bksyn.jobs.model import TrainingJobConfig, TrainingJobConfigSchema,\
     TrainingJob, TrainingJobMetadata, TrainingJobMetadataSchema, TrainingJobStatus
-from bksyn.nodes import Node, NodeDbClient
+from bksyn.nodes import Node
 
 
 class SubmitTrainingJob(Resource):
@@ -74,12 +74,11 @@ class StartTrainingJob(Resource):
         job.unlock()
 
         # Spawn horovod subprocess
-        db_client = NodeDbClient.from_env()
         host_list = ['localhost:1']
         remote_workers = 0
         for node_conf in job.config.nodes:
             node_id = node_conf['id']
-            node = db_client.get_node_by_id(node_id)
+            node = Node.load(node_id)
             if node is None:
                 continue
             if not node.isActive:
