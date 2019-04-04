@@ -1,6 +1,9 @@
 <template>
   <div class="jobs-list-item">
     <v-card tile>
+      <v-progress-linear indeterminate
+        v-if="job.status.isActive"
+        height="2" color="info"></v-progress-linear>
       <v-toolbar flat card dense>
         <v-toolbar-side-icon>
           <v-img :src="backendImage"></v-img>
@@ -28,7 +31,7 @@
               {{ 'Epoch ' + job.status.epoch.toString() +
                 '/' + job.config.epochs.toString()}}
             </p>
-            <v-progress-linear color="light-blue"
+            <v-progress-linear color="light-blue" height="5"
               :value="epochProgress"></v-progress-linear>
           </v-flex>
           <v-flex xs12 md6 v-if="job.status.totalIter > 0">
@@ -36,7 +39,7 @@
               {{ 'Iteration ' + job.status.iter.toString() +
                 '/' + job.status.totalIter.toString()}}
             </p>
-            <v-progress-linear color="orange"
+            <v-progress-linear color="orange" height="5"
               :value="iterProgress"></v-progress-linear>
           </v-flex>
         </v-layout>

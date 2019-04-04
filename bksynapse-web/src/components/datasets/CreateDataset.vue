@@ -94,8 +94,7 @@ export default {
       }
     },
     isValid() {
-      return this.datasetMeta.name && 
-        this.droppedFiles > 0
+      return this.datasetMeta.name
     }
   },
   mounted() {
