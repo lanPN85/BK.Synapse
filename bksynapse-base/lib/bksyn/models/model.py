@@ -27,7 +27,7 @@ class Model:
 
     @property
     def model_def_path(self):
-        return os.path.join(self.src_path, 'bkd_model.py')
+        return os.path.join(self.src_path, 'bks.model.py')
 
     @property
     def exists(self):
@@ -35,7 +35,7 @@ class Model:
     
     @property
     def meta_path(self):
-        return os.path.join(self.path, 'meta.json')
+        return os.path.join(self.path, '.bks.meta')
 
     @property
     def weight_path(self):
@@ -71,8 +71,11 @@ class Model:
     @classmethod
     def load(cls, name):
         meta_path = cls(name).meta_path
-        with open(meta_path, 'rt') as f:
-            model = ModelSchema().load(json.load(f)).data
+        try:
+            with open(meta_path, 'rt') as f:
+                model = ModelSchema().load(json.load(f)).data
+        except FileNotFoundError:
+            return None
         return model
 
 

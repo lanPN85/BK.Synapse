@@ -2,12 +2,17 @@ import os
 import json
 import sys
 
+from datetime import datetime
 from marshmallow import Schema, fields, post_load
 
 
 class DataLoader:
-    def __init__(self, name):
+    def __init__(self, name, createdAt=None):
+        if createdAt is None:
+            createdAt = datetime.now()
+
         self.name = name
+        self.createdAt = createdAt
 
     @property
     def path(self):
@@ -16,10 +21,14 @@ class DataLoader:
     @property
     def src_path(self):
         return os.path.join(self.path, 'src')
+
+    @property
+    def meta_path(self):
+        return os.path.join(self.path, '.bks.meta')
     
     @property
     def loader_def_path(self):
-        return os.path.join(self.src_path, 'bkd_dataset.py')
+        return os.path.join(self.src_path, 'bks.dataset.py')
 
     @property
     def exists(self):
@@ -46,14 +55,25 @@ class DataLoader:
 
     def save(self):
         os.makedirs(self.src_path, exist_ok=True)
+        d = DataLoaderSchema().dump(self).data
+        with open(self.meta_path, 'wt') as f:
+            json.dump(d, f, indent=2)
 
     @classmethod
     def load(cls, name):
-        return cls(name)
+        dl = cls(name)
+        try:
+            with open(dl.meta_path, 'rt') as f:
+                d = json.load(f)
+        except FileNotFoundError:
+            return None
+        dl = DataLoaderSchema().load(d).data
+        return dl
 
 
 class DataLoaderSchema(Schema):
     name = fields.Str()
+    createdAt = fields.DateTime()
 
     @post_load
     def make_obj(self, data):

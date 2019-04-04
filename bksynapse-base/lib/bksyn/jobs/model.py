@@ -162,7 +162,7 @@ class TrainingJob:
 
     @property
     def meta_path(self):
-        return os.path.join(self.path, 'meta.json')
+        return os.path.join(self.path, '.bks.meta')
 
     @property
     def config_path(self):

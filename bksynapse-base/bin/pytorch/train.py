@@ -304,7 +304,7 @@ def main(job):
             save_snapshot(torch_model, snap_path)
             log_update_status(job, state='SAVING', 
                 message='Saved model snapshot', 
-                metrics=avg_metrics)
+                metrics=avg_metrics, epoch=ep+1)
     
     if log_writer:
         log_writer.close()
