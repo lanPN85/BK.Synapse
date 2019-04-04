@@ -74,13 +74,20 @@
                 messages="Learning rate is scaled up by the number of nodes"></v-text-field>
             </v-flex>
             <v-flex xs12 md6>
+              <v-text-field label="Snapshot Interval"
+                v-model="jobConfigs.snapshotInterval"
+                type="number"
+                color="jobs" box
+                messages="Number of epochs between each model snapshot"></v-text-field>
+            </v-flex>
+            <v-flex xs12 md6>
               <v-select label="Node Type"
                 v-model="jobConfigs.nodeType"
                 :items="configChoices.nodeType"
                 color="jobs" box></v-select>
             </v-flex>
             <v-flex xs12 md6>
-              <v-select label="Nodes"
+              <v-select label="Worker Nodes"
                 multiple
                 v-model="jobConfigs.nodes"
                 :items="nodeIdList"
@@ -272,7 +279,6 @@ export default {
         }
       }).then(response => {
         var nodes = response.data.nodes
-        console.log(nodes)
         component.configChoices.nodes = nodes
       })
     },

@@ -20,20 +20,6 @@
         <v-toolbar-items>
         </v-toolbar-items>
       </v-toolbar>
-      
-      <v-card-text>
-        <v-layout row wrap>
-          <v-flex xs6 md4>
-            Model: <span><b>{{ job.config.model }}</b></span>
-          </v-flex>
-          <v-flex xs6 md4>
-            Dataset: <span><b>{{ job.config.dataset }}</b></span>
-          </v-flex>
-          <v-flex xs6 md4>
-            Data loader: <span><b>{{ job.config.dataLoader }}</b></span>
-          </v-flex>
-        </v-layout>
-      </v-card-text>
 
       <v-card-text>
         <v-layout row wrap>
@@ -55,11 +41,15 @@
           </v-flex>
         </v-layout>
 
-        <div v-if="job.status.message" class="console">
-          {{'' + job.status.message}}
-        </div>
+        <v-textarea box readonly v-if="job.status.message"
+          :rows="10" v-model="job.status.message"></v-textarea>
 
         <v-card-actions style="overflow-x: auto">
+          <div>
+            <v-chip outline :color="nodeMessage.color">
+              <b>{{ nodeMessage.message }}</b>
+            </v-chip>
+          </div>
           <div v-for="metric in job.status.metrics" :key="metric.name">
             <v-chip><b>{{ formatMetric(metric) }}</b></v-chip>
           </div>
@@ -70,12 +60,38 @@
         <span style="overflow-x: hidden"
          class="small-text">{{ 'Created at ' + job.meta.createdAt }}</span>
         <v-spacer></v-spacer>
-        <v-btn icon flat color="grey" @click="removeDialog.show = true">
-          <v-icon>mdi-delete</v-icon>
-        </v-btn>
-        <v-btn flat color="info" @click="showDetails = !showDetails">
-          {{ showDetails ? 'Hide details' : 'Show details' }}
-        </v-btn>
+
+        <v-menu left offset-y>
+          <v-btn icon slot="activator">
+            <v-icon>mdi-dots-horizontal</v-icon>
+          </v-btn>
+
+          <v-card>
+            <v-list>
+              <v-list-tile @click="downloadJobOutput">
+                <v-list-tile-title>Download job outputs</v-list-tile-title>
+              </v-list-tile>
+              <v-list-tile :to="'/jobs/analytics/' + job.id">
+                <v-list-tile-title>View snapshots & analytics</v-list-tile-title>
+              </v-list-tile>
+
+              <v-divider></v-divider>
+              <v-list-tile color="error" @click="removeDialog.show = true">
+                <v-list-tile-title><b>Delete job</b></v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-card>
+        </v-menu>
+
+        <v-menu offset-y v-model="showDetails"
+          :close-on-content-click="false" left
+          max-height="250" :nudge-width="350">
+          <v-btn flat color="info" slot="activator">
+            {{ showDetails ? 'Hide details' : 'Show details' }}
+          </v-btn>
+          <job-info-menu :job="job"></job-info-menu>
+        </v-menu>
+        
         <v-btn :color="runBtn.btnColor" flat
           @click="runBtn.btnCallback"
           :loading="loading.startStop">
@@ -132,11 +148,16 @@
 
 <script>
 import axios from 'axios'
-import {sprintf} from 'sprintf-js'
-import { setTimeout, clearTimeout } from 'timers';
+import FileSaver from 'file-saver'
+import { sprintf } from 'sprintf-js'
+import { setTimeout, clearTimeout } from 'timers'
+import JobInfoMenu from '@/components/jobs/JobInfoMenu'
 
 export default {
   name: 'JobsListItem',
+  components: {
+    JobInfoMenu
+  },
   props: {
     job: Object,
     onRemoved: Function
@@ -159,6 +180,16 @@ export default {
     }
   },
   computed: {
+    nodeMessage() {
+      var nodeCount = 1 + this.job.config.nodes.length
+      var color = this.job.config.nodeType == 'gpu' ? 'green' : 'blue'
+      var suffix = this.job.config.nodeType.toUpperCase() + 's'
+
+      return {
+        'message': nodeCount.toString() + ' ' + suffix,
+        color: color
+      }
+    },
     abbrevId() {
       var suffix = ''
       if (this.job.id.length > 9) suffix = '...'
@@ -267,6 +298,11 @@ export default {
       }).catch(error => {
         console.error(error)
       })
+    },
+    downloadJobOutput() {
+      var url = process.env.VUE_APP_APIURL + 'jobs/export/' + this.job.id + '.zip'
+
+      window.open(url, '_blank')
     },
     startJob() {
       var url = process.env.VUE_APP_APIURL + 'jobs/start/training'
