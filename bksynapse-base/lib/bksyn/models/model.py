@@ -3,13 +3,19 @@ import json
 import torch
 import sys
 
+from datetime import datetime
 from marshmallow import Schema, fields, post_load
 
 
 class Model:
-    def __init__(self, name, backend='pytorch'):
+    def __init__(self, name, backend='pytorch',
+        dateCreated=None):
+        if dateCreated is None:
+            dateCreated = datetime.now()
+
         self.name = name
         self.backend = backend
+        self.dateCreated = dateCreated
 
     @property
     def path(self):
@@ -73,6 +79,7 @@ class Model:
 class ModelSchema(Schema):
     name = fields.Str()
     backend = fields.Str()
+    dateCreated = fields.DateTime()
 
     @post_load
     def make_obj(self, data):

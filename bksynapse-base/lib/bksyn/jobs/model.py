@@ -79,9 +79,12 @@ class TrainingJobStatus:
     def __init__(self, state, 
         iter=0, totalIter=0, 
         epoch=0, message=None, 
-        metrics=None, **kwargs):
+        metrics=None, timestamp=None, 
+        **kwargs):
         if metrics is None:
             metrics = []
+        if timestamp is None:
+            timestamp = datetime.now()
 
         self.state = state
         self.iter = iter
@@ -89,6 +92,7 @@ class TrainingJobStatus:
         self.epoch = epoch
         self.message = message
         self.metrics = metrics
+        self.timestamp = timestamp
     
     @property
     def isActive(self):
@@ -107,6 +111,7 @@ class TrainingJobStatusSchema(Schema):
     error = fields.Str()
     metrics = fields.List(fields.Nested(TrainingJobMetricSchema()))
     message = fields.Str()
+    timestamp = fields.DateTime()
     isActive = fields.Boolean()
     isStopped = fields.Boolean()
 
@@ -170,6 +175,10 @@ class TrainingJob:
     @property
     def history_path(self):
         return os.path.join(self.output_path, 'history.toml')
+
+    @property
+    def hvd_timeline_path(self):
+        return os.path.join(self.output_path, 'timeline.json')
 
     @property
     def output_path(self):
