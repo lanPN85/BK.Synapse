@@ -6,7 +6,7 @@ services:
     image: bksynapse/node:$VERSION
     volumes:
       - type: bind
-        source: /home/common/bksynapse
+        source: /mnt/bksynapse
         target: /data
       - type: bind
         source: ./logs
@@ -15,6 +15,6 @@ services:
       - BKSYN_NODEDB_HOST=192.168.1.2
       - BKSYN_NODEDB_PORT=17017
       - BKSYN_DATA_ROOT=/data
-      - BKSYN_NODE_ADDRESS=192.168.1.2
+      - BKSYN_NODE_ADDRESS=192.168.1.8
       - BKSYN_NODE_TYPE=cpu
     network_mode: host
