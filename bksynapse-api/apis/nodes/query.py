@@ -7,7 +7,9 @@ from flask_restful import Resource
 
 from apis import utils
 from apis.logs import err_logged
-from bksyn.nodes import Node, NodeDbClient, NodeExtSchema
+from bksyn.nodes import Node, NodeExtSchema
+
+ROOT_DIR = os.path.join(os.environ['BKSYN_DATA_ROOT'], 'jobs')
 
 
 class GetNodeList(Resource):
@@ -16,8 +18,11 @@ class GetNodeList(Resource):
         active_only = flask.request.args.get('active_only', 'false')
         active_only = active_only.lower() == 'true'
 
-        db_client = NodeDbClient.from_env()
-        nodes = db_client.get_all_nodes()
+        ids = os.listdir(ROOT_DIR)
+        ids = filter(lambda x: os.path.isdir(os.path.join(ROOT_DIR, x)), ids)
+        ids = sorted(ids)
+        nodes = map(lambda x: Node.load(x), ids)
+        nodes = filter(lambda x: x is not None, nodes)
 
         if active_only:
             nodes = filter(lambda x: x.isActive, nodes)
@@ -35,8 +40,7 @@ class GetNodeStatus(Resource):
     def get(self):
         node_id = flask.request.args['id']
 
-        db_client = NodeDbClient.from_env()
-        node = db_client.get_node_by_id(node_id)
+        node = Node.load(node_id)
 
         if node is None:
             return {

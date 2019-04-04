@@ -1,81 +1,17 @@
 import os
+import json
 import psutil
 import GPUtil
-import pymongo
 import dateutil.parser
 
 from datetime import datetime, timedelta
 from marshmallow import Schema, post_load, fields
-from pymongo import MongoClient
-
-
-class NodeDbClient(MongoClient):
-    @classmethod
-    def from_env(cls, **kwargs):
-        env = os.environ
-        return cls(env['BKSYN_NODEDB_HOST'], 
-            int(env['BKSYN_NODEDB_PORT']), **kwargs)
-
-    def db(self):
-        return self['bksyn']
-
-    def collection(self):
-        return self.db()['nodes']
-
-    def insert_node(self, node, exist_ok=False):
-        d = NodeSchema().dump(node).data
-
-        if not exist_ok:
-            prev = self.collection().find_one({
-                'id': node.id
-            })
-            if prev is not None:
-                raise ValueError('Node with id `%s` already exists.' % node.id)
-        
-        return self.collection().insert_one(d)
-
-    def remove_node(self, node):
-        return self.collection().delete_one({
-            'id': node.id
-        })
-
-    def update_node_status(self, node):
-        return self.collection().update_one({
-            'id': node.id
-        }, {
-            '$set': {
-                'status': node.status
-            }
-        })
-
-    def get_all_nodes(self):
-        cursor = self.collection().find(sort=[
-            ('id', pymongo.ASCENDING)
-        ])
-
-        nodes = []
-        for item in cursor:
-            try:
-                nd = NodeSchema().load(item).data
-                nodes.append(nd)
-            except:
-                continue
-        return nodes
-
-    def get_node_by_id(self, id):
-        node = self.collection().find_one({
-            'id': id
-        })
-
-        if node is None:
-            return None
-        return NodeSchema().load(node).data
 
 
 class Node:
     MAX_ALIVE_TIMEOUT = timedelta(seconds=21)
 
-    def __init__(self, id, info, status=None, **kwargs):
+    def __init__(self, id, info=None, status=None, **kwargs):
         if status is None:
             status = {
                 'lastUpdated': datetime.now().isoformat()
@@ -84,6 +20,18 @@ class Node:
         self.id = id
         self.info = info
         self.status = status
+
+    @property
+    def path(self):
+        return os.path.join(os.environ['BKSYN_DATA_ROOT'], 'nodes', self.id)
+
+    @property
+    def status_path(self):
+        return os.path.join(self.path, 'status.json')
+
+    @property
+    def info_path(self):
+        return os.path.join(self.path, 'info.json')
 
     @property
     def isActive(self):
@@ -140,6 +88,31 @@ class Node:
             } for gpu in gpus]
         
         self.status = status
+
+    def update_status(self):
+        with open(self.status_path, 'wt') as f:
+            json.dump(self.status, f, indent=2)
+
+    def save(self):
+        with open(self.status_path, 'wt') as f:
+            json.dump(self.status, f, indent=2)
+
+        with open(self.info_path, 'wt') as f:
+            json.dump(self.info, f, indent=2)
+
+    @classmethod
+    def load(cls, id):
+        node = cls(id)
+
+        try:
+            with open(node.status_path, 'rt') as f:
+                node.status = json.load(f)
+            with open(node.info_path, 'rt') as f:
+                node.info = json.load(f)
+        except FileNotFoundError:
+            return None
+        
+        return node
 
 
 class NodeSchema(Schema):

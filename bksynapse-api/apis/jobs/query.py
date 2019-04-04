@@ -13,6 +13,7 @@ from bksyn.jobs import TrainingJob, TrainingJobSchema, TrainingJobStatusSchema
 
 ROOT_DIR = os.path.join(os.environ['BKSYN_DATA_ROOT'], 'jobs')
 
+
 class ListJobs(Resource):
     @err_logged
     def get(self):

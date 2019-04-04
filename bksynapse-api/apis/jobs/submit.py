@@ -94,10 +94,17 @@ class StartTrainingJob(Resource):
         host_str = ','.join(host_list)
         workers = 1 + remote_workers
         worker_exc = os.path.join(
-            current_app.config['BACKEND_WORKER_DIRS'][job.config.backend], 'train.py')
+            current_app.config['BACKEND_WORKER_DIRS'][job.config.backend], 'train.py'
+        )
         
+        btl_incl = os.environ.get('BKSYN_BTL_TCP_INCLUDE', '')
+        if btl_incl != '':
+            btl_incl = '-mca btl_tcp_if_include ' + btl_incl
+
         cmd = [
-            'horovodrun -p 17992', 
+            'mpirun --allow-run-as-root -bind-to none -map-by slot',
+            '-mca plm_rsh_args "-p 17992" -mca pml ob1 -mca btl ^openib',
+            btl_incl, '-x LD_LIBRARY_PATH -x PATH -x BKSYN_DATA_ROOT',
             '-np', str(workers), '-H', host_str,
             worker_exc, '--job-id', job.id
         ]
