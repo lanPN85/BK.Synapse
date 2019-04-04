@@ -10,6 +10,7 @@
     "@babel/polyfill": "^7.0.0-rc.1",
     "@mdi/font": "^2.6.95",
     "axios": "^0.18.0",
+    "file-saver": "^2.0.1",
     "roboto-fontface": "*",
     "sprintf-js": "^1.1.2",
     "typeface-exo": "^0.0.61",
