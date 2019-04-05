@@ -12,7 +12,7 @@
           </v-flex>
 
           <v-flex xs12>
-            <job-summary-panel></job-summary-panel>
+            <job-summary-panel :jobId="$route.params.jobId"></job-summary-panel>
           </v-flex>
         </v-layout>
       </v-container>

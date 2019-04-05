@@ -10,8 +10,10 @@ from flask_logconfig import LogConfig
 from flask_cors import CORS
 from flask_restful import Api
 
-from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob, ListJobs, ListOptimizers, GetJobStatus, DeleteTrainingJob, ExportJobOutput, GetJobConfig
-from apis.models import SubmitModel, UploadModelSrc, UploadModelWeights, ListModels, ModelExists
+from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob,\
+    ListJobs, ListOptimizers, GetJobStatus, DeleteTrainingJob, ExportJobOutput,\
+    GetJobConfig, GetJobSummary
+from apis.models import SubmitModel, UploadModelSrc, UploadModelWeights, ListModels, ModelExists, DeleteModel
 from apis.datasets import SubmitDataset, UploadDatasetFiles, ListDatasets, DatasetExists, DeleteDataset
 from apis.loaders import SubmitLoader, UploadLoaderSrc, LoaderExists, ListLoaders, DeleteLoader
 from apis.nodes import GetNodeList, GetNodeStatus
@@ -38,6 +40,7 @@ api.add_resource(StopTrainingJob, '/jobs/stop/training')
 api.add_resource(DeleteTrainingJob, '/jobs/delete/training')
 api.add_resource(ListJobs, '/jobs/list')
 api.add_resource(GetJobStatus, '/jobs/status')
+api.add_resource(GetJobSummary, '/jobs/summary')
 api.add_resource(GetJobConfig, '/jobs/config')
 api.add_resource(ExportJobOutput, '/jobs/export/<job_id>.zip')
 api.add_resource(ListOptimizers, '/optimizers/list')
@@ -45,6 +48,7 @@ api.add_resource(ListOptimizers, '/optimizers/list')
 api.add_resource(SubmitModel, '/models/submit')
 api.add_resource(UploadModelSrc, '/models/upload/<model_name>/src')
 api.add_resource(UploadModelWeights, '/models/upload/<model_name>/weights')
+api.add_resource(DeleteModel, '/models/delete')
 api.add_resource(ListModels, '/models/list')
 api.add_resource(ModelExists, '/models/exists')
 

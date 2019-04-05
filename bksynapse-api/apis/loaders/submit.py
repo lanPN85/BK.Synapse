@@ -62,7 +62,7 @@ class DeleteLoader(Resource):
 
         if ds is None:
             return {
-                'msg': 'Invalid dataset name'
+                'msg': 'Invalid loader name'
             }, 400
         
         shutil.rmtree(ds.path)

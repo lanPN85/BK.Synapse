@@ -73,3 +73,21 @@ class UploadModelWeights(Resource):
         return {
             'msg': 'Success'
         }
+
+
+class DeleteModel(Resource):
+    @err_logged
+    def post(self):
+        payload = flask.request.get_json()
+        model_name = payload['model']['name']
+        md = Model.load(model_name)
+
+        if md is None:
+            return {
+                'msg': 'Invalid model name'
+            }, 400
+        
+        shutil.rmtree(md.path)
+        return {
+            'msg': 'Success'
+        }
