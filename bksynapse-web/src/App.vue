@@ -35,4 +35,9 @@ export default {
 .header-text {
   font-weight: bold;
 }
+
+.small-text {
+  color: gray;
+  font-size: small;
+}
 </style>

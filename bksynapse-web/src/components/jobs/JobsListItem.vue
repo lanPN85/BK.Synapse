@@ -369,11 +369,6 @@ export default {
 </script>
 
 <style scoped>
-.small-text {
-  color: gray;
-  font-size: small;
-}
-
 .id-text {
   font-size: larger;
   font-weight: 400;

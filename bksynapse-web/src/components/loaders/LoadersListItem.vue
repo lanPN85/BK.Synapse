@@ -1,18 +1,14 @@
 <template>
-  <div class="datasets-list-item">
+  <div class="loaders-list-item">
     <v-card tile>
       <v-toolbar flat card dense>
         <v-toolbar-title>
-          {{ dataset.name }}
+          {{ loader.name }}
         </v-toolbar-title>
       </v-toolbar>
 
-      <v-card-text>
-        {{ 'Size: ' + datasetSize }}
-      </v-card-text>
-
       <v-card-actions>
-        <span class="small-text">{{ 'Created at ' + dataset.createdAt }}</span>
+        <span class="small-text">{{ 'Created at ' + loader.createdAt }}</span>
         <v-spacer></v-spacer>
         <v-btn flat color="error" @click="removeDialog.show = true">
           Delete
@@ -24,14 +20,14 @@
       width="400">
       <v-card>
         <v-card-title class="headline">
-          Delete dataset
+          Delete data loader
         </v-card-title>
         <v-card-text>
-          Are you sure you wish to delete this dataset ?
+          Are you sure you wish to delete this data loader ?
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn flat @click="removeDataset">
+          <v-btn flat @click="removeLoader">
             Yes 
           </v-btn>
           <v-btn flat @click="removeDialog.show = false">
@@ -47,9 +43,9 @@
 import {sprintf} from 'sprintf-js'
 
 export default {
-  name: 'DatasetsListItem',
+  name: 'LoadersListItem',
   props: {
-    dataset: Object,
+    loader: Object,
     onRemoved: Function
   },
   data() {
@@ -60,19 +56,10 @@ export default {
     }
   },
   computed: {
-    datasetSize() {
-      const units = ['B', 'KB', 'MB', 'GB']
-      var val = this.dataset.totalBytes
-      for (var i=0; i<units.length; i++) {
-        if (val < 1024 || i == units.length - 1) {
-          return sprintf('%.2f%s', val, units[i])
-        }
-        val /= 1024
-      }
-    }
+    
   },
   methods: {
-    removeDataset() {
+    removeLoader() {
       this.removeDialog.show = false
       if (this.onRemoved) this.onRemoved(this.dataset)
     }

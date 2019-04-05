@@ -17,7 +17,7 @@ ROOT_DIR = os.path.join(os.environ['BKSYN_DATA_ROOT'], 'jobs')
 class ListJobs(Resource):
     @err_logged
     def get(self):
-        max_count = flask.request.args.get('max_count', default=20, type=int)
+        # max_count = flask.request.args.get('max_count', default=20, type=int)
         offset = flask.request.args.get('offset', default=0, type=int)
         id_only = flask.request.args.get('id_only', default='false') == 'true'
         active_only = flask.request.args.get('active_only', default='false') == 'true'
@@ -51,7 +51,7 @@ class ListJobs(Resource):
             d['status'] = TrainingJobStatusSchema().dump(status).data
             objs.append(d)
         objs = sorted(objs, key=lambda x: x['meta']['createdAt'], reverse=True)
-        objs = objs[offset:offset + max_count]
+        objs = objs[offset:]
 
         return {
             'jobs': objs

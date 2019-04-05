@@ -54,6 +54,11 @@ export default new Router({
       component: () => import('./views/jobs/ManageJobsView.vue') 
     },
     {
+      path: '/jobs/analytics/:jobId',
+      name: 'analytics-jobs',
+      component: () => import('./views/jobs/JobAnalyticsView.vue')
+    },
+    {
       path: '*',
       name: 'not-found',
       component: () => import('./views/Page404.vue')

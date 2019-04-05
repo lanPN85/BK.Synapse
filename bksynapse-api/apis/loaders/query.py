@@ -15,7 +15,7 @@ ROOT_DIR = os.path.join(os.environ['BKSYN_DATA_ROOT'], 'dataloaders')
 class ListLoaders(Resource):
     @err_logged
     def get(self):
-        max_count = flask.request.args.get('max_count', default=20, type=int)
+        # max_count = flask.request.args.get('max_count', default=20, type=int)
         offset = flask.request.args.get('offset', default=0, type=int)
         name_only = flask.request.args.get('name_only', default='false') == 'true'
 
@@ -27,7 +27,7 @@ class ListLoaders(Resource):
                 'loaders': names
             }
 
-        names = names[offset:offset + max_count]
+        names = names[offset:]
         objs = []
         for name in names:
             obj = DataLoader(name)
