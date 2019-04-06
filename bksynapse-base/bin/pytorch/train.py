@@ -300,7 +300,7 @@ def main(job):
         # Save snapshot
         if ep % job.config.snapshotInterval == 0 and hvd.rank() == 0:
             snap_path = os.path.join(job.snapshot_path, 
-                'epoch-%d.pth' % (ep+1))
+                job.get_snapshot_name(ep + 1))
             save_snapshot(torch_model, snap_path)
             log_update_status(job, state='SAVING', 
                 message='Saved model snapshot', 

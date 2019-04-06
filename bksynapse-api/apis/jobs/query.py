@@ -124,9 +124,27 @@ class ExportJobOutput(Resource):
         if not os.path.exists(job.output_path):
             return {
                 'msg': 'No output for requested job'
-            }
+            }, 404
 
         zip_path = os.path.join(job.path, 'output.zip')
         utils.zip(zip_path, job.output_path)
 
         return flask.send_from_directory(job.path, 'output.zip')
+
+
+class ExportJobSnapshot(Resource):
+    @err_logged
+    def get(self, job_id, file_name):
+        job = TrainingJob.load(job_id)
+        if job is None:
+            return {
+                'msg': 'Invalid job ID'
+            }, 400
+
+        path = os.path.join(job.snapshot_path, file_name)
+        if not os.path.exists(path):
+            return {
+                'msg': 'No snapshot with given name'
+            }, 404
+        
+        return flask.send_from_directory(job.snapshot_path, file_name)

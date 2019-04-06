@@ -12,7 +12,7 @@ from flask_restful import Api
 
 from apis.jobs import SubmitTrainingJob, StartTrainingJob, StopTrainingJob,\
     ListJobs, ListOptimizers, GetJobStatus, DeleteTrainingJob, ExportJobOutput,\
-    GetJobConfig, GetJobSummary
+    GetJobConfig, GetJobSummary, GetPerEpochSummary, ExportJobSnapshot
 from apis.models import SubmitModel, UploadModelSrc, UploadModelWeights, ListModels, ModelExists, DeleteModel
 from apis.datasets import SubmitDataset, UploadDatasetFiles, ListDatasets, DatasetExists, DeleteDataset
 from apis.loaders import SubmitLoader, UploadLoaderSrc, LoaderExists, ListLoaders, DeleteLoader
@@ -41,8 +41,10 @@ api.add_resource(DeleteTrainingJob, '/jobs/delete/training')
 api.add_resource(ListJobs, '/jobs/list')
 api.add_resource(GetJobStatus, '/jobs/status')
 api.add_resource(GetJobSummary, '/jobs/summary')
+api.add_resource(GetPerEpochSummary, '/jobs/epochs')
 api.add_resource(GetJobConfig, '/jobs/config')
 api.add_resource(ExportJobOutput, '/jobs/export/<job_id>.zip')
+api.add_resource(ExportJobSnapshot, '/jobs/export/snapshots/<job_id>/<file_name>')
 api.add_resource(ListOptimizers, '/optimizers/list')
 
 api.add_resource(SubmitModel, '/models/submit')

@@ -1,4 +1,3 @@
-# FROM nvidia/cuda:9.0-devel-ubuntu16.04
 FROM horovod/horovod:0.16.1-tf1.12.0-torch1.0.0-mxnet1.4.0-py3.5 
 
 LABEL "maintainer"="lanpn <phan.ngoclan58@gmail.com>"

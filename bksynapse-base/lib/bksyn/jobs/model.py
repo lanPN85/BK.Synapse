@@ -4,6 +4,7 @@ import json
 import toml
 import shutil
 
+from file_read_backwards import FileReadBackwards
 from datetime import datetime
 from marshmallow import Schema, fields, post_load
 
@@ -208,6 +209,10 @@ class TrainingJob:
         if os.path.exists(self.stop_lock_path):
             os.remove(self.stop_lock_path)
 
+    def get_snapshot_name(self, epoch):
+        if self.config.backend == 'pytorch':
+            return 'epoch-%d.pth' % (epoch)
+
     def get_status(self):
         if not os.path.exists(self.status_path):
             return TrainingJobStatus('CREATED')
@@ -218,7 +223,46 @@ class TrainingJob:
 
     def get_history(self):
         with open(self.history_path, 'rt') as f:
-            return toml.load(f).get('entry', [])
+            ld = toml.load(f).get('entry', [])
+            return list(map(lambda x: TrainingJobStatusSchema().load(x).data, ld))
+
+    def get_history_iter(self):
+        with open(self.history_path, 'rt') as f:
+            group = []
+            for line in f:
+                line = line.strip()
+                if line == '# ===Start===':
+                    group = []
+                elif line == '# ===End===':
+                    s = '\n'.join(group)
+                    try:
+                        d = toml.loads(s)['entry'][0]
+                        obj = TrainingJobStatusSchema().load(d).data
+                        yield obj
+                    except:
+                        continue
+                else:
+                    group.append(line)
+
+
+    def get_history_rev_iter(self):
+        with FileReadBackwards(self.history_path, encoding="utf-8") as f:
+            group = []
+            for line in f:
+                line = line.strip()
+                if line == '# ===End===':
+                    group = []
+                elif line == '# ===Start===':
+                    s = '\n'.join(reversed(group))
+                    try:
+                        d = toml.loads(s)['entry'][0]
+                        obj = TrainingJobStatusSchema().load(d).data
+                        yield obj
+                    except:
+                        continue
+                else:
+                    group.append(line)
+
 
     def clear_outputs(self):
         shutil.rmtree(self.output_path, ignore_errors=True)
