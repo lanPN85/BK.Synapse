@@ -219,6 +219,10 @@ def main(job):
             output = torch_model(data)
             loss = torch_model.loss(output, target)
             loss.backward()
+            
+            if job.config.gradNorm is not None:
+                nn.utils.clip_grad_norm_(torch_model.parameters(), job.config.gradNorm)
+
             optimizer.step()
             metrics['loss'].update(loss.item())
             
