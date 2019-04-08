@@ -14,5 +14,5 @@ services:
     environment:
       - BKSYN_DATA_ROOT=/data
       - BKSYN_NODE_ADDRESS=10.198.54.231
-      - BKSYN_NODE_TYPE=cpu
+      - BKSYN_NODE_TYPE=gpu
     network_mode: host

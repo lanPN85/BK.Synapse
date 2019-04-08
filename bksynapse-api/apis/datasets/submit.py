@@ -1,6 +1,7 @@
 import flask
 import os
 import shutil
+import time
 
 from flask import current_app
 from flask_restful import Resource
@@ -34,7 +35,7 @@ class UploadDatasetFiles(Resource):
     @err_logged
     def post(self, dataset_name):
         fp = flask.request.files['file']
-        ds = Dataset(dataset_name)
+        ds = Dataset.load(dataset_name)
         save_path = os.path.join(ds.path, 'files.zip')
         current_chunk = int(flask.request.form['dzchunkindex'])
 
