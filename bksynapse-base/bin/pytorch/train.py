@@ -94,6 +94,7 @@ def log_update_status(job, **kwargs):
     for mt in kwargs['metrics']:
         logger.info('\t%s: %.5f' % (mt.name, mt.value))
 
+
 @root_node_only
 def save_snapshot(model, path):
     torch.save(model.state_dict(), path)
@@ -183,9 +184,9 @@ def main(job):
         else:
             first_batch = first_batch.cuda()
     try:
-        logger.debug(first_batch)
         save_tensorboard_graph(log_writer, torch_model, first_batch)
-    except RuntimeError:
+    except:
+        log_update_status(job, state='SETUP', message='Warning: Model graph cannot be written by Tensorboard.')
         pass
     del first_batch
 
