@@ -38,9 +38,9 @@ class UploadDatasetFiles(Resource):
         save_path = os.path.join(ds.path, 'files.zip')
         current_chunk = int(flask.request.form['dzchunkindex'])
 
-        if current_chunk == 0 and os.path.exists(ds.path):
-            shutil.rmtree(ds.path)
-            os.makedirs(ds.path)
+        # if current_chunk == 0 and os.path.exists(ds.path):
+        #    shutil.rmtree(ds.path)
+        #    os.makedirs(ds.path)
 
         with open(save_path, 'ab') as f:
             f.seek(int(flask.request.form['dzchunkbyteoffset']))
@@ -48,6 +48,7 @@ class UploadDatasetFiles(Resource):
 
         total_chunks = int(flask.request.form['dztotalchunkcount'])
         if current_chunk + 1 == total_chunks:
+            time.sleep(1)
             utils.unzip(save_path)
             os.remove(save_path)
             ds.update_size()
