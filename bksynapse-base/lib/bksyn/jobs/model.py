@@ -24,7 +24,7 @@ class TrainingJobConfig:
         epochs=50, nodeType='cpu',
         batchSize=32, valDataLoader=None,
         optimizer='sgd', learningRate=1e-3,
-        snapshotInterval=5):
+        snapshotInterval=5, gradNorm=None):
         if valDataLoader is None:
             valDataLoader = dataLoader
 
@@ -41,6 +41,7 @@ class TrainingJobConfig:
         self.optimizer = optimizer
         self.learningRate = learningRate
         self.snapshotInterval = snapshotInterval
+        self.gradNorm = gradNorm
 
 
 class TrainingJobConfigSchema(Schema):
@@ -59,6 +60,7 @@ class TrainingJobConfigSchema(Schema):
     snapshotInterval = fields.Int()
     optimizer = fields.Str()
     learningRate = fields.Float()
+    gradNorm = fields.Float()
 
     @post_load
     def make_obj(self, data):
