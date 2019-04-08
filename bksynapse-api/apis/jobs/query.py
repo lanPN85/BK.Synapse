@@ -45,7 +45,7 @@ class ListJobs(Resource):
                         }, 500
                 time.sleep(0.5)
             if active_only:
-                if not status['isActive']:
+                if not status.isActive:
                     continue
             d = TrainingJobSchema().dump(obj).data
             d['status'] = TrainingJobStatusSchema().dump(status).data
