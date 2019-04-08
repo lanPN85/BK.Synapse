@@ -178,8 +178,12 @@ def main(job):
     # Visualize graph with first batch
     first_batch, _ = next(iter(val_loader))
     if use_cuda:
-        first_batch = first_batch.cuda()
+        if isinstance(first_batch, list) or isinstance(first_batch, tuple):
+            first_batch = list(map(lambda x: x.cuda(), first_batch))
+        else:
+            first_batch = first_batch.cuda()
     try:
+        logger.debug(first_batch)
         save_tensorboard_graph(log_writer, torch_model, first_batch)
     except RuntimeError:
         pass
