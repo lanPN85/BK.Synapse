@@ -1,0 +1,2 @@
+docker-compose.* merge=ours
+.env merge=ours

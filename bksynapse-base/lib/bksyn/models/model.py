@@ -27,7 +27,7 @@ class Model:
 
     @property
     def model_def_path(self):
-        return os.path.join(self.src_path, 'bks.model.py')
+        return os.path.join(self.src_path, 'bks_model.py')
 
     @property
     def exists(self):

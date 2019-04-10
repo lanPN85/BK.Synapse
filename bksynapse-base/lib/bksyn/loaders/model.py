@@ -28,7 +28,7 @@ class DataLoader:
     
     @property
     def loader_def_path(self):
-        return os.path.join(self.src_path, 'bks.dataset.py')
+        return os.path.join(self.src_path, 'bks_dataset.py')
 
     @property
     def exists(self):
