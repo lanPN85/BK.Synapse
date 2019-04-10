@@ -86,6 +86,9 @@ export default {
         forceChunking: true,
         paramName: 'file',
         addRemoveLinks: true,
+        parallelUploads: 1,
+        parallelChunkUploads: false,
+        retryChunks: true,
         timeout: 30 * 60 * 1000,
         headers: {
           'Access-Control-Allow-Origin': '*'

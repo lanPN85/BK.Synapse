@@ -1,9 +1,11 @@
 <template>
   <div class="jobs-list">
     <v-container grid-list-md>
-      <div v-for="job in jobs" :key="job.id">
-        <jobs-list-item :job="job" :onRemoved="removeJob"></jobs-list-item>
-      </div>
+      <v-layout row wrap>
+        <v-flex xs12 v-for="job in jobs" :key="job.id">
+          <jobs-list-item :job="job" :onRemoved="removeJob"></jobs-list-item>
+        </v-flex>
+      </v-layout>
     </v-container>
   </div>
 </template>

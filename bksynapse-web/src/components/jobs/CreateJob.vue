@@ -74,6 +74,12 @@
                 messages="Learning rate is scaled up by the number of nodes"></v-text-field>
             </v-flex>
             <v-flex xs12 md6>
+              <v-text-field label="Gradient Norm"
+                v-model="jobConfigs.gradNorm"
+                type="number"
+                color="jobs" box></v-text-field>
+            </v-flex>
+            <v-flex xs12 md6>
               <v-text-field label="Snapshot Interval"
                 v-model="jobConfigs.snapshotInterval"
                 type="number"
@@ -148,7 +154,8 @@ export default {
         nodeType: 'cpu',
         nodes: [],
         epochs: 50,
-        backend: 'pytorch'
+        backend: 'pytorch',
+        gradNorm: null
       },
       configChoices: {
         backend: [{

@@ -13,7 +13,7 @@ import axios from 'axios'
 import LoadersListItem from '@/components/loaders/LoadersListItem'
 
 export default {
-  name: 'DatasetsList',
+  name: 'LoadersList',
   components: {
     LoadersListItem
   },
@@ -26,7 +26,7 @@ export default {
       for (var i=0; i<this.loaders.length; i++) {
         if (loader.id == this.loaders[i].id) {
           component.requestRemove(loader).then(() => {
-            component.loader.splice(i, 1)
+            component.loaders.splice(i, 1)
           }).catch(error => {
             component.$store.commit('showError', 'An error occurred. The data loader may not have been deleted.')
           })
@@ -35,7 +35,7 @@ export default {
       }
     },
     requestRemove(loader) {
-      var url = process.env.VUE_APP_APIURL + 'loaders/delete/training'
+      var url = process.env.VUE_APP_APIURL + 'loaders/delete'
       return axios.post(url, {
         loader: {
           name: loader.name

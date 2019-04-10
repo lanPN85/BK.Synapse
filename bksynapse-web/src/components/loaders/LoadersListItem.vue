@@ -61,7 +61,7 @@ export default {
   methods: {
     removeLoader() {
       this.removeDialog.show = false
-      if (this.onRemoved) this.onRemoved(this.dataset)
+      if (this.onRemoved) this.onRemoved(this.loader)
     }
   }
 }

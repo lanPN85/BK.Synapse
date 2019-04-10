@@ -63,6 +63,9 @@ export default {
           name: 'Learning Rate',
           value: job.config.learningRate
         }, {
+          name: 'Gradient Norm',
+          value: job.config.gradNorm || 'N/A'
+        }, {
           name: 'No. Epochs',
           value: job.config.epochs
         }, {

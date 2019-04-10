@@ -13,7 +13,7 @@ import axios from 'axios'
 import ModelsListItem from '@/components/models/ModelsListItem'
 
 export default {
-  name: 'ModelsList',
+  name: 'ModelsListItem',
   components: {
     ModelsListItem
   },
@@ -35,7 +35,7 @@ export default {
       }
     },
     requestRemove(model) {
-      var url = process.env.VUE_APP_APIURL + 'models/delete/training'
+      var url = process.env.VUE_APP_APIURL + 'models/delete'
       return axios.post(url, {
         model: {
           name: model.name
