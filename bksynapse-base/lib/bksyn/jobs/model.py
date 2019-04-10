@@ -221,7 +221,7 @@ class TrainingJob:
 
         with open(self.status_path, 'rt') as f:
             d = json.load(f)
-        return TrainingJobStatusSchema().load(d).data
+        return TrainingJobStatus(**d)
 
     def get_history(self):
         with open(self.history_path, 'rt') as f:
