@@ -41,7 +41,7 @@ class GetJobSummary(Resource):
 
         return {
             'summary': {
-                'state': job.get_status()['state'],
+                'state': job.get_status().state,
                 'finishedEpochs': finishedEpochs,
                 'elapsedSecs': elapsedSecs
             }
