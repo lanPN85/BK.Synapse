@@ -75,10 +75,7 @@
 
       <v-divider></v-divider>
 
-      <v-list-tile avatar ripple>
-        <v-list-tile-avatar><v-icon>mdi-information-outline</v-icon></v-list-tile-avatar>
-        <v-list-tile-action>About</v-list-tile-action>
-      </v-list-tile>
+      
     </v-list>
   </div>
 </template>
