@@ -62,7 +62,7 @@ class GetPerEpochSummary(Resource):
         epochs = []
         current_ep = 0
         current_obj = None
-        for entry in job.get_history_iter():
+        for i, entry in enumerate(job.get_history_iter()):
             if (entry.state == 'TRAINING' and entry.epoch > current_ep) or entry.state == 'FINISHED':
                 if current_obj is not None:
                     if 'startTime' in current_obj.keys() and 'endTime' in current_obj.keys():
@@ -73,6 +73,7 @@ class GetPerEpochSummary(Resource):
                 current_ep = entry.epoch
                 current_obj = {}
                 current_obj['startTime'] = entry.timestamp
+                current_obj['index'] = current_ep
             elif entry.state == 'EVALUATED':
                 current_obj['metrics'] = entry.metrics
                 current_obj['endTime'] = entry.timestamp
