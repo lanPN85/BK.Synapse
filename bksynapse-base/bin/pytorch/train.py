@@ -192,6 +192,7 @@ def main(job):
 
     # Start training
     log_update_status(job, state='TRAINING', message='Starting training...')
+    avg_train_metrics = []
     avg_metrics = []
     for ep in range(job.config.epochs):
         # Check for lock
@@ -237,23 +238,23 @@ def main(job):
                 pass
             
             # Convert Metric to value
-            m_list = []
+            avg_train_metrics = []
             for k, v in metrics.items():
-                m_list.append(TrainingJobMetric(name=k, value=v.avg))
-            m_list.extend(avg_metrics)
+                avg_train_metrics.append(TrainingJobMetric(name=k, value=v.avg))
+            # avg_train_metrics.extend(avg_metrics)
 
             log_update_status(job, state='TRAINING',
-                iter=batch_idx+1, totalIter=len(train_loader), epoch=ep+1, metrics=m_list)
+                iter=batch_idx+1, totalIter=len(train_loader), epoch=ep+1, metrics=avg_train_metrics + avg_metrics)
             # Check for lock
             if os.path.exists(job.stop_lock_path):
                 log_update_status(job, state='INTERRUPT')
                 exit(-1)
         
-        m_list = []
+        avg_train_metrics = []
         for k, v in metrics.items():
-            m_list.append(TrainingJobMetric(name=k, value=v.avg))
-        m_list.extend(avg_metrics)
-        save_tensorboard_metrics(log_writer, m_list, 
+            avg_train_metrics.append(TrainingJobMetric(name=k, value=v.avg))
+        # avg_train_metrics.extend(avg_metrics)
+        save_tensorboard_metrics(log_writer, avg_train_metrics + avg_metrics, 
             ep+1, prefix='train/')
 
         # Eval phase
@@ -292,7 +293,7 @@ def main(job):
                 exit(-1)
         
         # Calculate average for all metrics
-        # avg_metrics = []
+        avg_metrics = []
         kv_list = sorted(val_metrics.items(), key=lambda x: x[0])
         for k, v in kv_list:
             avg_k = 'val_%s' % k
@@ -305,9 +306,9 @@ def main(job):
                 log_update_status(job, state='INTERRUPT', metrics=avg_metrics)
                 exit(-1)
         log_update_status(job, state='EVALUATED', epoch=ep+1,
-            iter=len(val_loader), metrics=avg_metrics, 
+            iter=len(val_loader), metrics=avg_metrics + avg_train_metrics, 
             totalIter=len(val_loader))
-        save_tensorboard_metrics(log_writer, avg_metrics, ep+1, prefix='val/')
+        save_tensorboard_metrics(log_writer, avg_metrics + avg_train_metrics, ep+1, prefix='val/')
 
         # Save snapshot
         if ep % job.config.snapshotInterval == 0 and hvd.rank() == 0:
@@ -320,7 +321,7 @@ def main(job):
     
     if log_writer:
         log_writer.close()
-    log_update_status(job, state='FINISHED', metrics=avg_metrics)
+    log_update_status(job, state='FINISHED', metrics=avg_metrics + avg_train_metrics)
 
 
 if __name__ == "__main__":
