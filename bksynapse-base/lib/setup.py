@@ -3,9 +3,17 @@ import platform
 import sys
 from setuptools import setup, find_packages
 
-with open('requirements.txt', 'rt') as f:
-    requirements = f.readlines()
-    requirements = list(map(lambda x: x.strip(), requirements))
+requirements = [
+    'marshmallow>=2.19.0',
+    'toml>=0.10.0',
+    'pymongo>=3.7.2',
+    'psutil>=5.6.1',
+    'gputil>=1.4.0',
+    'python-dateutil>=2.8.0',
+    'tensorboardX>=1.6',
+    'logzero>=1.5.0',
+    'file_read_backwards>=2.0.0'
+]
 
 VERSION = '0.1.0'
 

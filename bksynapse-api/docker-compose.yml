@@ -5,9 +5,6 @@ services:
     build: .
     image: bksynapse/apis:$VERSION
     environment:
-      - BKSYN_DATA_ROOT=/data
-      - BKSYN_NODEDB_HOST=192.168.1.2
-      - BKSYN_NODEDB_PORT=17017
       - BKSYN_BTL_TCP_INCLUDE=192.168.1.0/24
       - HOROVOD_START_TIMEOUT=6000
     volumes:

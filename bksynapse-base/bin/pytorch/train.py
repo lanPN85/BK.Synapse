@@ -224,13 +224,15 @@ def main(job):
                 nn.utils.clip_grad_norm_(torch_model.parameters(), job.config.gradNorm)
 
             optimizer.step()
-            metrics['loss'].update(loss.item())
+            avg_loss = metric_average(loss.item(), 'loss')
+            metrics['loss'].update(avg_loss)
             
             try:
                 # Get metrics if metrics() is implemented
                 _user_metrics = torch_model.metrics(output, target)
                 for k, v in _user_metrics.items():
-                    metrics[k].update(v)
+                    avg_v = metric_average(v, k)
+                    metrics[k].update(avg_v)
             except AttributeError:
                 pass
             
@@ -256,6 +258,7 @@ def main(job):
 
         # Eval phase
         torch_model.eval()
+        # On val set
         val_metrics = defaultdict(lambda: 0.)
         log_update_status(job, state='EVALUATING', epoch=ep+1, 
             metrics=avg_metrics)
@@ -282,14 +285,14 @@ def main(job):
             except:
                 pass
 
-            log_update_status(job, state='EVALUATING', epoch=ep+1, iter=batch_idx+1,totalIter=len(val_loader))
+            log_update_status(job, state='EVALUATING', epoch=ep+1, iter=batch_idx+1, totalIter=len(val_loader))
             # Check for lock
             if os.path.exists(job.stop_lock_path):
                 log_update_status(job, state='INTERRUPT', metrics=avg_metrics)
                 exit(-1)
         
         # Calculate average for all metrics
-        avg_metrics = []
+        # avg_metrics = []
         kv_list = sorted(val_metrics.items(), key=lambda x: x[0])
         for k, v in kv_list:
             avg_k = 'val_%s' % k
@@ -312,7 +315,7 @@ def main(job):
                 job.get_snapshot_name(ep + 1))
             save_snapshot(torch_model, snap_path)
             log_update_status(job, state='SAVING', 
-                message='Saved model snapshot', 
+                message='Saved model snapshot',
                 metrics=avg_metrics, epoch=ep+1)
     
     if log_writer:

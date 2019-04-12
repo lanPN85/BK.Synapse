@@ -1,8 +1,6 @@
-Pillow
 scikit-learn
 scikit-image
 opencv-python
 opencv-contrib-python
 pandas
-python-dateutil
 pycocotools

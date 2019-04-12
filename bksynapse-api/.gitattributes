@@ -1,2 +1,0 @@
-docker-compose.* merge=ours
-configs/ merge=ours
