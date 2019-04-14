@@ -301,9 +301,9 @@ class TrainingJob:
     def load(cls, job_id):
         job = cls(job_id)
         with open(job.config_path, 'rt') as f:
-            job.config = TrainingJobConfigSchema().load(json.load(f)).data
+            job.config = TrainingJobConfig(**json.load(f))
         with open(job.meta_path, 'rt') as f:
-            job.meta = TrainingJobMetadataSchema().load(json.load(f)).data
+            job.meta = TrainingJobMetadata(**json.load(f))
         return job
 
 
