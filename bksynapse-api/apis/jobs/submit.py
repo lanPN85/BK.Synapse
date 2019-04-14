@@ -74,7 +74,7 @@ class StartTrainingJob(Resource):
         job.unlock()
 
         # Spawn horovod subprocess
-        host_list = ['localhost:1']
+        host_list = []
         remote_workers = 0
         for node_conf in job.config.nodes:
             node_id = node_conf['id']
@@ -91,7 +91,7 @@ class StartTrainingJob(Resource):
             host_list.append('%s:%d' % (node.info['address'], num_procs))
 
         host_str = ','.join(host_list)
-        workers = 1 + remote_workers
+        workers = remote_workers
         worker_exc = os.path.join(
             current_app.config['BACKEND_WORKER_DIRS'][job.config.backend], 'train.py'
         )

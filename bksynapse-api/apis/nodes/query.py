@@ -48,5 +48,6 @@ class GetNodeStatus(Resource):
             }, 404
         
         return {
-            'status': node.status
+            'status': node.status,
+            'isActive': node.isActive
         }
