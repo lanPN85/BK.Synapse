@@ -3,7 +3,10 @@
     <v-card>
       <v-toolbar card dense>
         <v-toolbar-title>
-          {{ node.id }}
+          <span>{{ node.id }}</span>
+          <span v-if="!node.isActive" class="error--text body-2">
+             [OFFLINE]
+          </span>
         </v-toolbar-title>
         <v-spacer></v-spacer>
 
@@ -24,7 +27,7 @@
         </v-layout>
       </v-card-text>
 
-      <v-card-text>
+      <v-card-text v-if="node.isActive">
         <v-layout>
           <v-flex xs6 class="text-xs-center">
             <v-progress-circular style="margin-bottom: 5px"
@@ -78,7 +81,8 @@
                   </v-layout>
                 </v-flex>
 
-                <v-flex xs4 class="text-xs-center">
+                <v-flex xs4 class="text-xs-center"
+                  v-if="node.isActive">
                   <v-progress-circular 
                     style="margin-bottom: 5px"
                     v-model="gpuMemUsage[n-1]"
@@ -196,6 +200,7 @@ export default {
       }).then(response => {
         var status = response.data.status
         component.node.status = status
+        component.node.isActive = response.data.isActive
         component.timeoutId = setTimeout(component.fetchStatus, 3000)
       }).catch(error => {
         console.error(error)

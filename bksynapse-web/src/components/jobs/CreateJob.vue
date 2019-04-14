@@ -11,25 +11,25 @@
         <form>
           <v-layout row wrap>
             <v-flex xs12 md6>
-              <v-select label="Backend"
+              <v-select label="Backend *"
                 v-model="jobConfigs.backend"
                 :items="configChoices.backend"
                 color="jobs" box></v-select>
             </v-flex>
             <v-flex xs12 md6>
-              <v-autocomplete label="Train Dataset"
+              <v-autocomplete label="Train Dataset *"
                 v-model="jobConfigs.dataset"
                 :items="configChoices.dataset"
                 color="jobs" box></v-autocomplete>
             </v-flex>
             <v-flex xs12 md6>
-              <v-autocomplete label="Validation Dataset"
+              <v-autocomplete label="Validation Dataset *"
                 v-model="jobConfigs.valDataset"
                 :items="configChoices.dataset"
                 color="jobs" box></v-autocomplete>
             </v-flex>
             <v-flex xs12 md6>
-              <v-autocomplete label="Train Data Loader"
+              <v-autocomplete label="Train Data Loader *"
                 v-model="jobConfigs.dataLoader"
                 :items="configChoices.dataLoader"
                 color="jobs" box></v-autocomplete>
@@ -42,32 +42,32 @@
                 messages="If not specified, will default to the train data loader"></v-autocomplete>
             </v-flex>
             <v-flex xs12 md6>
-              <v-autocomplete label="Model"
+              <v-autocomplete label="Model *"
                 v-model="jobConfigs.model"
                 :items="configChoices.model"
                 color="jobs" box></v-autocomplete>
             </v-flex>
             <v-flex xs12 md6>
-              <v-select label="Optimizer"
+              <v-select label="Optimizer *"
                 v-model="jobConfigs.optimizer"
                 :items="configChoices.optimizer"
                 color="jobs" box></v-select>
             </v-flex>
             <v-flex xs12 md6>
-              <v-text-field label="Batch Size"
+              <v-text-field label="Batch Size *"
                 v-model="jobConfigs.batchSize"
                 type="number"
                 color="jobs" box
                 messages="The batch size per node"></v-text-field>
             </v-flex>
             <v-flex xs12 md6>
-              <v-text-field label="Epochs"
+              <v-text-field label="Epochs *"
                 v-model="jobConfigs.epochs"
                 type="number"
                 color="jobs" box></v-text-field>
             </v-flex>
             <v-flex xs12 md6>
-              <v-text-field label="Learning Rate"
+              <v-text-field label="Learning Rate *"
                 v-model="jobConfigs.learningRate"
                 type="number"
                 color="jobs" box
@@ -80,27 +80,31 @@
                 color="jobs" box></v-text-field>
             </v-flex>
             <v-flex xs12 md6>
-              <v-text-field label="Snapshot Interval"
+              <v-text-field label="Snapshot Interval *"
                 v-model="jobConfigs.snapshotInterval"
                 type="number"
                 color="jobs" box
                 messages="Number of epochs between each model snapshot"></v-text-field>
             </v-flex>
             <v-flex xs12 md6>
-              <v-select label="Node Type"
+              <v-select label="Node Type *"
                 v-model="jobConfigs.nodeType"
                 :items="configChoices.nodeType"
                 color="jobs" box></v-select>
             </v-flex>
             <v-flex xs12 md6>
-              <v-select label="Worker Nodes"
+              <v-select label="Worker Nodes *"
                 multiple
                 v-model="jobConfigs.nodes"
                 :items="nodeIdList"
-                color="jobs" box></v-select>
+                color="jobs" box
+                :messages="'At least one node must be specified'"></v-select>
             </v-flex>
           </v-layout>
         </form>
+        <p style="font-size=small">
+          * Required field
+        </p>
       </v-card-text>
 
       <v-card-actions>
@@ -184,6 +188,7 @@ export default {
         && configs.valDataset && configs.optimizer 
         && configs.model && configs.epochs > 0
         && configs.learningRate > 0
+        && configs.nodes.length > 0
     },
     nodeIdList() {
       var idList = []

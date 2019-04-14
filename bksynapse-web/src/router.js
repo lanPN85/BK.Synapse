@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
+import Tutorial from './views/Tutorial.vue'
 
 Vue.use(Router)
 
@@ -57,6 +58,16 @@ export default new Router({
       path: '/jobs/analytics/:jobId',
       name: 'analytics-jobs',
       component: () => import('./views/jobs/JobAnalyticsView.vue')
+    },
+    {
+      path: '/tutorials',
+      name: 'tutorials',
+      component: Tutorial
+    },
+    {
+      path: '/tutorials/:groupId/:file',
+      name: 'tutorial-view',
+      component: () => import('./views/TutorialView.vue')
     },
     {
       path: '*',

@@ -75,7 +75,10 @@
 
       <v-divider></v-divider>
 
-      
+      <v-list-tile to="/tutorials" ripple>
+        <v-list-tile-action><v-icon>mdi-book-open</v-icon></v-list-tile-action>
+        <v-list-tile-title>Tutorials</v-list-tile-title>
+      </v-list-tile>
     </v-list>
   </div>
 </template>

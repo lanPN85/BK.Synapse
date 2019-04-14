@@ -184,7 +184,7 @@ export default {
   },
   computed: {
     nodeMessage() {
-      var nodeCount = 1 + this.job.config.nodes.length
+      var nodeCount = this.job.config.nodes.length
       var color = this.job.config.nodeType == 'gpu' ? 'green' : 'blue'
       var suffix = this.job.config.nodeType.toUpperCase() + 's'
 
