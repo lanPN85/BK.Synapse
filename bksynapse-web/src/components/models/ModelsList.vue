@@ -13,12 +13,17 @@ import axios from 'axios'
 import ModelsListItem from '@/components/models/ModelsListItem'
 
 export default {
-  name: 'ModelsListItem',
+  name: 'ModelsList',
   components: {
     ModelsListItem
   },
   props: {
     models: Array
+  },
+  data() {
+    return {
+      
+    }
   },
   methods: {
     removeModel(model) {
