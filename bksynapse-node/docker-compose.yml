@@ -6,14 +6,14 @@ services:
     image: bksynapse/node:$VERSION
     volumes:
       - type: bind
-        source: /mnt/bksynapse
+        source: /mnt/shared/bksynapse
         target: /data
       - type: bind
         source: ./logs
         target: /app/logs
     environment:
       - BKSYN_DATA_ROOT=/data
-      - BKSYN_NODE_ADDRESS=192.168.1.6
-      - BKSYN_NODE_TYPE=cpu
+      - BKSYN_NODE_ADDRESS=10.42.0.1
+      - BKSYN_NODE_TYPE=gpu
     network_mode: host
-    command: bash -c "/usr/sbin/sshd -p 17992; python worker.py --id Desktop"
+    command: bash -c "/usr/sbin/sshd -p 17992; python worker.py --id VTL1"

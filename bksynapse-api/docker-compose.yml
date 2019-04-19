@@ -6,7 +6,7 @@ services:
     image: bksynapse/apis:$VERSION
     environment:
       - BKSYN_DATA_ROOT=/data
-      - BKSYN_BTL_TCP_INCLUDE=192.168.1.0/24
+      - BKSYN_BTL_TCP_INCLUDE=10.42.0.0/24
       - HOROVOD_START_TIMEOUT=6000
     volumes:
       - type: bind
@@ -17,6 +17,6 @@ services:
         source: ./configs
       - type: bind
         target: /data
-        source: /mnt/bksynapse
+        source: /mnt/shared/bksynapse
     network_mode: host
   
