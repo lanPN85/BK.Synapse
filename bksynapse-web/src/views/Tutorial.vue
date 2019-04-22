@@ -12,14 +12,6 @@
               </vue-markdown>
               </v-card-text>
             </v-card>
-          </v-flex><v-flex lg8 xs12 offset-lg2>
-            <v-card>
-              <v-card-text>
-                <vue-markdown>
-                {{ content }}  
-              </vue-markdown>
-              </v-card-text>
-            </v-card>
           </v-flex>
         </v-layout>
       </v-container>
