@@ -34,7 +34,7 @@ export default {
     }
   },
   mounted() {
-    var mdPath = '/tutorials/' + this.$route.params.groupId + '/' + this.$route.params.file + '.md'
+    var mdPath = '/tutorial/' + this.$route.params.groupId + '/' + this.$route.params.file + '.md'
     var component = this
 
     axios.get(mdPath).then(response => {
