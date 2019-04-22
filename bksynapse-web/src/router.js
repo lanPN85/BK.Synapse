@@ -60,8 +60,8 @@ export default new Router({
       component: () => import('./views/jobs/JobAnalyticsView.vue')
     },
     {
-      path: '/tutorials',
-      name: 'tutorials',
+      path: '/tutorial',
+      name: 'tutorial',
       component: Tutorial
     },
     {
