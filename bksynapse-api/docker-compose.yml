@@ -17,6 +17,6 @@ services:
         source: ./configs
       - type: bind
         target: /data
-        source: /mnt/bksynapse
+        source: /home/common/bksynapse
     network_mode: host
   
