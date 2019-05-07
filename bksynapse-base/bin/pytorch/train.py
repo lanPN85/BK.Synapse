@@ -130,7 +130,7 @@ def main(job):
         val_dataset = _val_loader.get_dataset(_val_dataset.path, val=True)
     except (NameError, AttributeError):
         log_update_status(job, state='ERROR', message="Invalid data loader")
-        exit(-1)
+        return
     
     try:
         # Import model
@@ -138,7 +138,7 @@ def main(job):
     except AttributeError:
         log_update_status(job, state='ERROR', 
             message="Input model must implement loss(output, target)")
-        exit(-1)
+        return
 
     use_cuda = job.config.nodeType == 'gpu'
     kwargs = {}
@@ -198,7 +198,7 @@ def main(job):
         # Check for lock
         if os.path.exists(job.stop_lock_path):
             log_update_status(job, state='INTERRUPT', metrics=avg_metrics)
-            exit(-1)
+            return
         
         # Train phase
         torch_model.train()
@@ -248,7 +248,7 @@ def main(job):
             # Check for lock
             if os.path.exists(job.stop_lock_path):
                 log_update_status(job, state='INTERRUPT')
-                exit(-1)
+                return
         
         avg_train_metrics = []
         for k, v in metrics.items():
@@ -290,7 +290,7 @@ def main(job):
             # Check for lock
             if os.path.exists(job.stop_lock_path):
                 log_update_status(job, state='INTERRUPT', metrics=avg_metrics)
-                exit(-1)
+                return
         
         # Calculate average for all metrics
         avg_metrics = []
@@ -304,7 +304,7 @@ def main(job):
             # Check for lock
             if os.path.exists(job.stop_lock_path):
                 log_update_status(job, state='INTERRUPT', metrics=avg_metrics)
-                exit(-1)
+                return
         log_update_status(job, state='EVALUATED', epoch=ep+1,
             iter=len(val_loader), metrics=avg_metrics + avg_train_metrics, 
             totalIter=len(val_loader))
