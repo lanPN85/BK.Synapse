@@ -118,6 +118,7 @@ export default {
     weightFileDropOpts() {
       var opts = this.commonFileDropOpts()
       opts.maxFilesize = 1024
+      opts.acceptedFiles = '*'
       return opts
     },
     isValid() {
