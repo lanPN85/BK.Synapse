@@ -35,7 +35,7 @@ export default {
       }
     },
     requestRemove(dataset) {
-      var url = process.env.VUE_APP_APIURL + 'datasets/delete/training'
+      var url = process.env.VUE_APP_APIURL + 'datasets/delete'
       return axios.post(url, {
         dataset: {
           name: dataset.name
