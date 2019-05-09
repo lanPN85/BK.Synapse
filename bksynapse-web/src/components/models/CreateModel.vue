@@ -131,7 +131,6 @@ export default {
       return {
         url: '/',
         autoProcessQueue: false,
-        autoQueue: false,
         maxFiles: 1,
         chunking: true,
         forceChunking: true,
