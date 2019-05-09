@@ -6,7 +6,7 @@
         <v-icon>mdi-menu</v-icon>
       </v-toolbar-side-icon>
       <v-toolbar-title>
-				<a href="/tutorials" class="title-text">BK.SYNAPSE Docs</a>
+				<a href="/tutorial" class="title-text">BK.SYNAPSE Docs</a>
 			</v-toolbar-title>
     </v-toolbar>
 

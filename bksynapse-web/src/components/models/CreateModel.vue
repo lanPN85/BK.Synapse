@@ -118,6 +118,7 @@ export default {
     weightFileDropOpts() {
       var opts = this.commonFileDropOpts()
       opts.maxFilesize = 1024
+      opts.acceptedFiles = '*'
       return opts
     },
     isValid() {
@@ -130,6 +131,7 @@ export default {
       return {
         url: '/',
         autoProcessQueue: false,
+        autoQueue: false,
         maxFiles: 1,
         chunking: true,
         forceChunking: true,
