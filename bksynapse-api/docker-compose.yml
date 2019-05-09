@@ -19,4 +19,5 @@ services:
         target: /data
         source: /mnt/shared/bksynapse
     network_mode: host
+    privileged: true
   

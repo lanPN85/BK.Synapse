@@ -1,4 +1,5 @@
-FROM horovod/horovod:0.16.1-tf1.12.0-torch1.0.0-mxnet1.4.0-py3.5 
+# FROM horovod/horovod:0.16.1-tf1.12.0-torch1.0.0-mxnet1.4.0-py3.5 
+FROM lanpn85/horovod:0.16.1-cuda10-py35 
 
 LABEL "maintainer"="lanpn <phan.ngoclan58@gmail.com>"
 
