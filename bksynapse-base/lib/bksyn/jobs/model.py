@@ -303,7 +303,7 @@ class TrainingJob:
         with open(job.config_path, 'rt') as f:
             job.config = TrainingJobConfig(**json.load(f))
         with open(job.meta_path, 'rt') as f:
-            job.meta = TrainingJobMetadata(**json.load(f))
+            job.meta = TrainingJobMetadataSchema.load(json.load(f)).data
         return job
 
 
