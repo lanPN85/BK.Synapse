@@ -50,17 +50,17 @@ class TrainingJobConfigSchema(Schema):
     dataset = fields.Str()
     valDataset = fields.Str()
     dataLoader = fields.Str()
-    valDataLoader = fields.Str()
+    valDataLoader = fields.Str(missing=None)
     nodes = fields.List(
         fields.Nested(NodeConfigSchema())
     )
-    nodeType = fields.Str()
-    batchSize = fields.Int()
-    epochs = fields.Int()
-    snapshotInterval = fields.Int()
-    optimizer = fields.Str()
-    learningRate = fields.Float()
-    gradNorm = fields.Float()
+    nodeType = fields.Str(missing=None)
+    batchSize = fields.Int(missing=None)
+    epochs = fields.Int(missing=None)
+    snapshotInterval = fields.Int(missing=None)
+    optimizer = fields.Str(missing=None)
+    learningRate = fields.Float(missing=None)
+    gradNorm = fields.Float(missing=None)
 
     @post_load
     def make_obj(self, data):
@@ -108,13 +108,13 @@ class TrainingJobStatus:
 
 class TrainingJobStatusSchema(Schema):
     state = fields.Str()
-    iter = fields.Int()
-    totalIter = fields.Int()
-    epoch = fields.Int()
-    error = fields.Str()
+    iter = fields.Int(missing=None)
+    totalIter = fields.Int(missing=None)
+    epoch = fields.Int(missing=None)
+    error = fields.Str(missing=None)
     metrics = fields.List(fields.Nested(TrainingJobMetricSchema()))
-    message = fields.Str()
-    timestamp = fields.DateTime()
+    message = fields.Str(missing='')
+    timestamp = fields.DateTime(missing=None)
     isActive = fields.Boolean()
     isStopped = fields.Boolean()
 
@@ -134,7 +134,7 @@ class TrainingJobMetadata:
 
 class TrainingJobMetadataSchema(Schema):
     createdAt = fields.DateTime()
-    pid = fields.Int()
+    pid = fields.Int(missing=None)
 
 
 class TrainingJob:
