@@ -4,6 +4,7 @@ services:
   app:
     build: .
     image: bkdigits/web:$APP_VERSION
+    network_mode: host
     ports:
       - "$HTTPS_PORT:443"
       - "$HTTP_PORT:17080"

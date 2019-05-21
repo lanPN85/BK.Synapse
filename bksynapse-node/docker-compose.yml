@@ -16,4 +16,4 @@ services:
       - BKSYN_NODE_ADDRESS=127.0.0.1
       - BKSYN_NODE_TYPE=cpu
     network_mode: host
-    command: bash -c "/usr/sbin/sshd -p 17992; python worker.py --id Desktop"
+    command: bash -c "/usr/sbin/sshd -p 17992; python worker.py --id Local"
