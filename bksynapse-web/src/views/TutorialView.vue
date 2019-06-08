@@ -22,11 +22,16 @@
 import axios from 'axios'
 import TutorialHeader from '@/components/TutorialHeader'
 import VueMarkdown from 'vue-markdown'
+import Prism from 'prismjs'
+import loadLanguages from 'prismjs/components'
 
 export default {
   name: 'Tutorial',
   components: {
     TutorialHeader, VueMarkdown
+  },
+  mounted() {
+    loadLanguages(['python'])
   },
   data() {
     return {
@@ -39,6 +44,12 @@ export default {
 
     axios.get(mdPath).then(response => {
       component.content = '\n' + response.data
+      var codeList = document.getElementsByClassName('language-py')
+      for (var i=0; i<codeList.length; i++) {
+        var block = codeList[i]
+        Prism.highlightElement(block)
+      }
+      Prism.highlightAll()
     }).catch(error => {
       console.error(error)
     })
@@ -47,5 +58,8 @@ export default {
 </script>
 
 <style>
-
+[class*=language-] {
+  display: block;
+  border: none;
+}
 </style>

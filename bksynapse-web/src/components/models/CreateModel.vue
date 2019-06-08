@@ -118,7 +118,6 @@ export default {
     weightFileDropOpts() {
       var opts = this.commonFileDropOpts()
       opts.maxFilesize = 1024
-      opts.acceptedFiles = '*'
       return opts
     },
     isValid() {
@@ -183,7 +182,7 @@ export default {
     },
     weightDzQueueComplete() {
       this.$refs.weightsDropzone.removeAllFiles()
-      this.lastCreated = Object.assign({}, this.loaderMeta)
+      this.lastCreated = Object.assign({}, this.modelMeta)
       this.modelMeta = Object.assign({}, this.defaultMeta)
       this.loading = false
     },
